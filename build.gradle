@@ -1,0 +1,15 @@
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
+repositories {
+    mavenCentral()
+    mavenRepo urls: 'http://m2repo.spockframework.org/snapshots'
+    mavenRepo urls: 'http://scala-tools.org/repo-releases'
+}
+
+dependencies {
+    groovy group: 'org.codehaus.groovy', name: 'groovy', version: '1.8.1'
+    compile group: 'org.pegdown', name: 'pegdown', version: '1.0.2'
+    testCompile  group: 'org.spockframework', name: 'spock-core', version: '0.6-groovy-1.8-SNAPSHOT'
+}
