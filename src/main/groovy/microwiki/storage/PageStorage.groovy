@@ -1,11 +1,11 @@
 package microwiki.storage
 
-import microwiki.WikiPage
+import microwiki.page.Page
 
 public interface PageStorage {
-    WikiPage pageAt(String path) throws PageNotFoundException
+    Page pageNamed(String pageName) throws PageNotFoundException
 
-    void removePageAt(String path) throws PageNotFoundException, RemovePageException
+    void removePageNamed(String pageName) throws PageNotFoundException, RemovePageException
 
-    void savePage(String path, String contents) throws SavePageException
+    void savePage(String pageName, String contents) throws SavePageException
 }

@@ -1,10 +1,11 @@
 package microwiki.storage.impl
 
-import microwiki.storage.PageStorage
+import microwiki.page.Page
+import microwiki.page.markdown.MarkdownPage
 import microwiki.storage.PageNotFoundException
+import microwiki.storage.PageStorage
 import microwiki.storage.RemovePageException
 import microwiki.storage.SavePageException
-import microwiki.WikiPage
 
 class FilesystemPageStorage implements PageStorage {
     private File root
@@ -21,30 +22,33 @@ class FilesystemPageStorage implements PageStorage {
     }
 
     @Override
-    WikiPage pageAt(String path) throws PageNotFoundException {
+    Page pageNamed(String pageName) throws PageNotFoundException {
         try {
-            def file = fileFor(path)
-            return new WikiPage(file.toURI(), file.text)
+            return new MarkdownPage(fileFor(pageName).text)
         }  catch (FileNotFoundException e) {
-            throw new PageNotFoundException(path, e)
+            throw new PageNotFoundException(pageName, e)
         }
     }
 
-    private File fileFor(String path) {
-        return new File(root, path + '.md')
+    private File fileFor(String pageName) {
+        return new SimplePageName(pageName).toFile(root,  'md')
     }
 
-    void removePageAt(String path) throws PageNotFoundException, RemovePageException {
-        File file = fileFor(path)
+    void removePageNamed(String pageName) throws PageNotFoundException, RemovePageException {
+        File file = fileFor(pageName)
         if (!file.exists()) {
-            throw new PageNotFoundException(path, new FileNotFoundException(file.absolutePath))
+            throw new PageNotFoundException(pageName, new FileNotFoundException(file.absolutePath))
         }
         if (!file.delete()) {
-            throw new RemovePageException()
+            throw new RemovePageException(pageName)
         }
     }
 
-    void savePage(String path, String contents) throws SavePageException {
-        fileFor(path).text = contents
+    void savePage(String pageName, String contents) throws SavePageException {
+        try {
+            fileFor(pageName).text = contents
+        } catch (IOException e) {
+            throw new SavePageException(pageName, e)
+        }
     }
 }

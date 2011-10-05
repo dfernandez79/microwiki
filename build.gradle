@@ -2,6 +2,10 @@ apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
+javaVersion = '1.6'
+sourceCompatibility = javaVersion
+targetCompatibility = javaVersion
+
 repositories {
     mavenCentral()
     mavenRepo urls: 'http://m2repo.spockframework.org/snapshots'
@@ -9,7 +13,9 @@ repositories {
 }
 
 dependencies {
-    groovy group: 'org.codehaus.groovy', name: 'groovy', version: '1.8.1'
+    groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '1.8.2'
     compile group: 'org.pegdown', name: 'pegdown', version: '1.0.2'
+    compile group:  'org.eclipse.jetty', name: 'jetty-server', version: '8.0.1.v20110908'
+    compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '8.0.1.v20110908'
     testCompile  group: 'org.spockframework', name: 'spock-core', version: '0.6-groovy-1.8-SNAPSHOT'
 }
