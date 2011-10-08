@@ -8,17 +8,19 @@ import microwiki.pages.PageFactory
 import microwiki.pages.PageTemplate
 
 class PageServlet extends HttpServlet {
-     private PageTemplate template
-     private PageFactory pageFactory
+    private final PageFactory pageFactory
+    private final PageTemplate displayTemplate
+    private final PageTemplate editTemplate
 
-    PageServlet(PageFactory pageFactory, PageTemplate template) {
+    PageServlet(PageFactory pageFactory, PageTemplate displayTemplate, PageTemplate editTemplate) {
         this.pageFactory = pageFactory
-        this.template = template
+        this.displayTemplate = displayTemplate
+        this.editTemplate = editTemplate
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        template.applyTo(pageFrom(req)).writeTo(resp.writer)
+        displayTemplate.applyTo(pageFrom(req)).writeTo(resp.writer)
     }
 
     private Page pageFrom(HttpServletRequest req) {

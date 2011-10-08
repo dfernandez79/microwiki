@@ -10,33 +10,40 @@ import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
 
 import microwiki.pages.MarkdownPage
-import groovy.text.GStringTemplateEngine
-import groovy.text.Template
 
 import microwiki.pages.PageFactory
 import microwiki.pages.PageTemplate
 import microwiki.servlets.PageServlet
+import microwiki.pages.TemplateAdapter
 
 class Server {
     private final JettyServer server
     private final PageFactory pageFactory
-    private final Map<String, Template> templates
+    private final Map<String, PageTemplate> templates
+    private final Resource docRoot
 
-    public static final Map<String, Template> DEFAULT_TEMPLATES = new HashMap<String, Template>()
-    static {
-        GStringTemplateEngine engine = new GStringTemplateEngine()
-        DEFAULT_TEMPLATES.display = engine.createTemplate(Server.getResource('templates/display.html'))
+    private static final int DEFAULT_PORT = 9999
+    public static final Map<String, PageTemplate> DEFAULT_TEMPLATES = [
+            display: template('templates/display.html'),
+            edit: template('templates/edit.html')
+    ]
+
+    private static template(String resourcePath) {
+        TemplateAdapter.using(Server.getResource(resourcePath))
     }
-
     public static void main(String[] args) {
-        new Server(9999).start()
+        new Server(Resource.newResource("/Users/diegof/prueba")).start()
     }
 
-    Server(Integer port) {
-        this(MarkdownPage.factoryUsing('UTF-8'), DEFAULT_TEMPLATES, port)
+    Server(Resource docRoot) {
+        this(docRoot, DEFAULT_PORT)
+    }
+    Server(Resource docRoot, Integer port) {
+        this(docRoot, MarkdownPage.factoryUsing('UTF-8'), DEFAULT_TEMPLATES, port)
     }
 
-    Server(PageFactory pageFactory, Map<String, Template>templates, Integer port) {
+    Server(Resource docRoot, PageFactory pageFactory, Map<String, PageTemplate>templates, Integer port) {
+        this.docRoot = docRoot
         this.pageFactory = pageFactory
         this.templates = templates
         server = new JettyServer(port)
@@ -45,23 +52,27 @@ class Server {
 
     private def initializeServerHandlers(org.eclipse.jetty.server.Server server) {
         ServletContextHandler servletContextHandler = new ServletContextHandler();
-        servletContextHandler.baseResource = Resource.newResource("/Users/diegof/prueba")
+        servletContextHandler.baseResource = docRoot
         servletContextHandler.contextPath = '/';
-        servletContextHandler.addServlet(pageDisplayServlet(), '*.md');
+        servletContextHandler.addServlet(wikiServlet(), '*.md');
 
-        ResourceHandler resourceHandler = new ResourceHandler(
+        ResourceHandler docRootResourceHandler = new ResourceHandler(
                 directoriesListed: true,
+                baseResource: docRoot)
+
+        ResourceHandler fallbackResourceHandler = new ResourceHandler(
+                directoriesListed: false,
                 baseResource: Resource.newClassPathResource('/microwiki/static'))
 
-        server.handler = new HandlerList(handlers: [resourceHandler, servletContextHandler, new DefaultHandler()])
+        server.handler = new HandlerList(handlers: [
+                servletContextHandler,
+                docRootResourceHandler,
+                fallbackResourceHandler,
+                new DefaultHandler()])
     }
 
-    private ServletHolder pageDisplayServlet() {
-        return new ServletHolder(new PageServlet(pageFactory, this.displayTemplate))
-    }
-
-    private  PageTemplate getDisplayTemplate() {
-        ({ page -> templates.display.make([page: page]) }) as PageTemplate
+    private ServletHolder wikiServlet() {
+        return new ServletHolder(new PageServlet(pageFactory, templates.display, templates.edit))
     }
 
     void start() {

@@ -1,6 +1,7 @@
 package microwiki.servlets
 
 class PageServletSpecification extends spock.lang.Specification {
+    def displayTemplate
     def "When method is GET display the page"() {
         // TODO
     }

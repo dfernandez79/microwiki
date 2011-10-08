@@ -1,5 +1,5 @@
 package microwiki.pages
 
 interface PageTemplate {
-    Writable applyTo(Page)
+    Writable applyTo(Page page)
 }
