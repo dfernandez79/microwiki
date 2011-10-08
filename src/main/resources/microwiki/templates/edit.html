@@ -9,7 +9,7 @@
         <li><a href="${page.uri.path}">Discard changes</a></li>
     </ul>
 </div>
-<form method="POST">
+<form method="POST" action="${page.uri.path}" accept-charset="UTF-8">
     <button type="submit">Save</button>
     <textarea id="contents" name="contents">${page.source}</textarea>
 </form>

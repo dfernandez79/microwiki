@@ -25,7 +25,7 @@ abstract class AbstractPageServlet extends HttpServlet {
         try {
             render(pageFor(pageURI), templateFor(req), resp)
         } catch (PageSourceNotFoundException e) {
-            resp.resetBuffer()
+            resp.reset()
             pageSourceNotFound(pageURI, resp)
         }
     }
@@ -33,6 +33,7 @@ abstract class AbstractPageServlet extends HttpServlet {
     protected abstract void pageSourceNotFound(URI pageURI, HttpServletResponse resp)
 
     protected def render(Page page, PageTemplate template, HttpServletResponse resp) {
+        resp.contentType = 'text/html'
         resp.characterEncoding = page.encoding
         template.applyTo(page).writeTo(resp.writer)
     }
