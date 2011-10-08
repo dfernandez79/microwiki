@@ -1,35 +1,19 @@
 package microwiki
 
-import microwiki.storage.impl.FilesystemPageStorage
-
 class ServerSpecification  extends spock.lang.Specification {
-    private static Server server
-    private static TestResources resources
-    private static Microwiki wiki
-
-    def setupSpec() {
-         resources = new TestResources().file('index.md', 'Main')
-         wiki = new Microwiki(storage: new FilesystemPageStorage(resources.tempDirectory))
-
-         server = new Server(wiki, 9999)
-         server.start()
+    def "When style.css is not found in the base directory, the one in /microwiki/static classpath is used"() {
+        // TODO
     }
 
-    def cleanupSpec() {
-        server.stop()
-        server = null
-
-        resources.cleanup()
-        resources = null
+    def "When style.css is found in the base directory, that one is used first"() {
+        // TODO
     }
 
-    def "serve the CSS for wiki pages"() {
-        expect:
-            'http://localhost:9999/style.css'.toURL().text == getClass().getResource('static/style.css').text
+    def "Non .md files are read from the base directory"() {
+        // TODO
     }
 
-    def "serve a wiki page"() {
-        expect:
-            'http://localhost:9999/index'.toURL().text == wiki.htmlToDisplay('index').toString()
+    def "If a template is not configured the default is used"() {
+        // TODO
     }
 }
