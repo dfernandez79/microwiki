@@ -3,16 +3,18 @@ package microwiki.servlets
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import microwiki.Templates
 import microwiki.pages.Page
 import microwiki.pages.PageProvider
 import microwiki.pages.PageSourceNotFoundException
 import microwiki.pages.PageTemplate
 
 abstract class AbstractPageServlet extends HttpServlet {
+    private static final int RESPONSE_BUFFER_SIZE = 64 * 1024
     protected final PageProvider pageProvider
-    protected final Map<String, PageTemplate> templates
+    protected final Templates templates
 
-    AbstractPageServlet(PageProvider pageProvider, Map<String, PageTemplate> templates) {
+    AbstractPageServlet(PageProvider pageProvider, Templates templates) {
         this.pageProvider = pageProvider
         this.templates = templates
     }
@@ -20,7 +22,7 @@ abstract class AbstractPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         URI pageURI = pagePathFrom(req)
-        resp.bufferSize = 64 * 1024
+        resp.bufferSize = RESPONSE_BUFFER_SIZE
 
         try {
             render(pageFor(pageURI), templateFor(req), resp)
@@ -45,11 +47,6 @@ abstract class AbstractPageServlet extends HttpServlet {
     protected abstract PageTemplate templateFor(HttpServletRequest req)
 
     protected URI pagePathFrom(HttpServletRequest req) {
-        def resource = req.servletContext.getResource(req.servletPath)
-        if (resource != null) {
-            return resource.toURI()
-        } else {
-            return new URI(req.servletPath.substring(1))
-        }
+        return new URI(req.servletPath.substring(1))
     }
 }

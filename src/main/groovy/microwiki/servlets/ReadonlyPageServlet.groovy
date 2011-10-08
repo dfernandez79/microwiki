@@ -1,12 +1,13 @@
 package microwiki.servlets
 
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
+import microwiki.Templates
 import microwiki.pages.PageProvider
 import microwiki.pages.PageTemplate
-import javax.servlet.http.HttpServletResponse
-import javax.servlet.http.HttpServletRequest
 
 class ReadonlyPageServlet extends AbstractPageServlet {
-    ReadonlyPageServlet(PageProvider pageProvider, Map<String, PageTemplate> templates) {
+    ReadonlyPageServlet(PageProvider pageProvider, Templates templates) {
         super(pageProvider, templates)
     }
 

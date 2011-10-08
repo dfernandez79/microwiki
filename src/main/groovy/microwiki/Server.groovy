@@ -2,8 +2,11 @@ package microwiki
 
 import org.eclipse.jetty.server.Server as JettyServer
 
+import javax.servlet.http.HttpServlet
+import microwiki.pages.PageProvider
 import microwiki.pages.PageTemplate
 import microwiki.pages.TemplateAdapter
+import microwiki.pages.markdown.MarkdownPageProvider
 import microwiki.servlets.PageServlet
 import microwiki.servlets.ReadonlyPageServlet
 import org.eclipse.jetty.server.handler.DefaultHandler
@@ -12,62 +15,49 @@ import org.eclipse.jetty.server.handler.ResourceHandler
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
 import org.eclipse.jetty.util.resource.Resource
-import microwiki.pages.PageProvider
-import javax.servlet.http.HttpServlet
-import microwiki.pages.markdown.MarkdownPageProvider
 
 class Server {
     public static final int DEFAULT_PORT = 9999
     public static final String DEFAULT_ENCODING = 'UTF-8'
-
-    public static final Map<String, PageTemplate> DEFAULT_TEMPLATES = [
-            display: template('display.html'),
-            edit: template('edit.html'),
-            create: template('create.html'),
-            read: template('read.html')
-    ]
-
-    private static template(String resource) {
-        TemplateAdapter.using(Server.getResource("templates/$resource"))
-    }
+    private static final CliBuilder CMD_LINE_PARSER = commandLineOptions()
 
     public static void main(String[] args) {
-        CliBuilder cli = commandLineOptions()
-
-        def options = cli.parse(args)
+        def options = CMD_LINE_PARSER.parse(args)
         if (options == null || options.help) {
-            cli.usage()
+            showCommandLineHelp()
         } else {
             startWith(options)
         }
     }
 
+    static void showCommandLineHelp() {
+        CMD_LINE_PARSER.usage()
+    }
+
     private static def startWith(OptionAccessor options) {
         def port = options.port ?: DEFAULT_PORT
-        def docroot = options.arguments().isEmpty() ?  new File('.').canonicalPath : options.arguments().get(0)
+        def docRoot = options.arguments().isEmpty() ? new File('.').canonicalPath : options.arguments().get(0)
         def encoding = options.encoding ?: DEFAULT_ENCODING
 
         println 'uwiki'
         println "Port: $port"
-        println "Document root: $docroot"
+        println "Document root: $docRoot"
         println "Encoding: $encoding"
 
         new Server(
-                Resource.newResource(docroot),
+                Resource.newResource(docRoot),
                 options.readonly ?: false,
-                new MarkdownPageProvider(new File(docroot), encoding),
+                new MarkdownPageProvider(new File(docRoot), encoding),
                 createTemplatesFrom(options),
                 port).start()
     }
 
-    private static LinkedHashMap createTemplatesFrom(OptionAccessor options) {
-        def templates = [:]
-        templates.putAll(DEFAULT_TEMPLATES)
-        setupTemplate(templates, options.getOptionValue('dt'), 'display', 'Display template')
-        setupTemplate(templates, options.getOptionValue('et'), 'edit', 'Edit template')
-        setupTemplate(templates, options.getOptionValue('ct'), 'create', 'Create template')
-        setupTemplate(templates, options.getOptionValue('rt'), 'read', 'Read template')
-        return templates
+    private static Templates createTemplatesFrom(OptionAccessor options) {
+        return new Templates(
+                display: template(options.getOptionValue('dt'), 'Display template'),
+                edit: template(options.getOptionValue('et'), 'Edit template'),
+                create: template(options.getOptionValue('ct'), 'Create template'),
+                read: template(options.getOptionValue('rt'), 'Read template'))
     }
 
     private static CliBuilder commandLineOptions() {
@@ -83,21 +73,27 @@ class Server {
         return cli
     }
 
-    private static void setupTemplate(Map<String, PageTemplate> templates, String option, String templateName, String msg) {
+    private static PageTemplate template(String option, String msg) {
         if (option != null) {
-            templates.put(templateName, TemplateAdapter.using(new File(option)))
             println "$msg: $option"
+            return TemplateAdapter.using(new File(option))
+        } else {
+            return null
         }
     }
 
     private final JettyServer server
     private final PageProvider pageProvider
-    private final Map<String, PageTemplate> templates
+    private final Templates templates
     private final Resource docRoot
     private final boolean readonly
 
+    Server(Resource docRoot) {
+        this(docRoot, false, new MarkdownPageProvider(docRoot.file, 'UTF-8'), new Templates(), DEFAULT_PORT)
+    }
+
     Server(Resource docRoot, boolean readonly, PageProvider pageProvider,
-           Map<String, PageTemplate> templates, Integer port) {
+           Templates templates, Integer port) {
 
         this.docRoot = docRoot
         this.readonly = readonly
@@ -142,5 +138,13 @@ class Server {
 
     void stop() {
         server.stop()
+    }
+
+    PageProvider getPageProvider() {
+        return pageProvider
+    }
+
+    Templates getTemplates() {
+        return templates
     }
 }

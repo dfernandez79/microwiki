@@ -10,9 +10,8 @@ Leave a blank line to create a new paragraph.
 This is a sub-header
 -----------------
 
->This is a bloquote paragraph.
-Split in multiple lines in the page source
-
+>This is a bloquote paragraph,
+split in multiple lines in the page source.
 
 Lists:
 
@@ -33,8 +32,8 @@ You can also use `code()` in-line.
  ---
 
  [A link to an URL](http://daringfireball.net/projects/markdown/syntax)
- [and a local link](/index.md)
+ and [to a local file](/index.md).
 
- Links with references [looks][1] more readable in plain text.
+ Links can be written as references that [looks][1] more readable in plain text.
 
 [1]: http://daringfireball.net/projects/markdown/syntax

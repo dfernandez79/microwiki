@@ -1,24 +1,18 @@
 Introduction
-============
+========
 
-Microwiki is not a normal Wiki Server, and istead of "Wiki" it could be called "doc viewer" or something like 
-that but I wasn't in a creative day for names.
+Microwiki is a minimalist wiki server to be used to add
+documentation to software projects.
 
-To explain what is microwiki, is better to start with the tool goals:
+Some of the characteristics of microwiki are:
 
-* Make easy to share your project documentation, without the need of a CMS.
-* Make the documentation available with your source code.
-* Use your current versioning system to store your project documentation.
-* Use of your current tools (text editor / IDE) to edit the documentation.
-* Make easy to view and browse the documentation.
+* No databases, pages are stored in files using [Markdown][1] format, and you
+   can edit them directly using a text editor or your favorite IDE.
 
-The tipical use case of microwiki will look something like this:
+* Does not provide versioning: pages are stored in plain files, that let's you use
+   SVN, GIT or your favorite SCM system.
 
-* Checkout your project
-* Start microwiki, and use your web browser to browse the docs in your project/docs folders
-  
-  - In microwiki you can search, view and edit your docs
-  - The changes are stored back to your project/docs folder as plain text files, so you can use a text editor 
-    to view/edit them
-* Then you can commit/merge your changes, so other developers can see them
+*  No configuration needed: start microwiki in your document folder and you are
+   done.
 
+[1]: http://daringfireball.net/projects/markdown/

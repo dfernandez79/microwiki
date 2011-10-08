@@ -1,15 +1,13 @@
 package microwiki.servlets
 
-import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import microwiki.pages.Page
+import microwiki.Templates
 import microwiki.pages.PageProvider
-import microwiki.pages.PageSourceNotFoundException
 import microwiki.pages.PageTemplate
 
 class PageServlet extends AbstractPageServlet {
-    PageServlet(PageProvider pageProvider, Map<String, PageTemplate> templates) {
+    PageServlet(PageProvider pageProvider, Templates templates) {
         super(pageProvider, templates)
     }
 

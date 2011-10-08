@@ -1,7 +1,7 @@
 package microwiki.pages.markdown
 
-import microwiki.pages.PageProvider
 import microwiki.pages.Page
+import microwiki.pages.PageProvider
 
 class MarkdownPageProvider implements PageProvider {
     private final String encoding
@@ -14,6 +14,9 @@ class MarkdownPageProvider implements PageProvider {
 
     @Override
     Page pageFor(URI uri) {
+        if (uri.isAbsolute() && docRoot.relativize(uri).isAbsolute()) {
+            throw new IllegalArgumentException("Only URIs relative $docRoot are allowed")
+        }
         return new MarkdownPage(docRoot.relativize(uri), docRoot.resolve(uri).toURL(), encoding)
     }
 
@@ -25,5 +28,10 @@ class MarkdownPageProvider implements PageProvider {
     @Override
     public <T> T writePage(URI uri, Closure<T> closure) {
         new File(docRoot.resolve(uri)).withWriter closure
+    }
+
+    @Override
+    Page pageFor(String relativePath) {
+        return pageFor(new URI(relativePath))
     }
 }
