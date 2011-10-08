@@ -16,4 +16,8 @@ class ServerSpecification  extends spock.lang.Specification {
     def "If a template is not configured the default is used"() {
         // TODO
     }
+
+    def "Display command line args help if no parameters are given"() {
+        // TODO
+    }
 }

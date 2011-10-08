@@ -18,6 +18,10 @@ class PageServletSpecification extends spock.lang.Specification {
         // TODO
     }
 
+    def "If the file is not found and the ?edit parameter is specified, display the edit page with the new file action"() {
+        // TODO
+    }
+
     def "When method is POST and the ?create parameter is specified, create a new file"() {
         // TODO
     }

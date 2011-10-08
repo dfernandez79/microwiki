@@ -4,26 +4,35 @@ import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import microwiki.pages.Page
-import microwiki.pages.PageFactory
+import microwiki.pages.PageProvider
+import microwiki.pages.PageSourceNotFoundException
 import microwiki.pages.PageTemplate
 
-class PageServlet extends HttpServlet {
-    private final PageFactory pageFactory
-    private final PageTemplate displayTemplate
-    private final PageTemplate editTemplate
-
-    PageServlet(PageFactory pageFactory, PageTemplate displayTemplate, PageTemplate editTemplate) {
-        this.pageFactory = pageFactory
-        this.displayTemplate = displayTemplate
-        this.editTemplate = editTemplate
+class PageServlet extends AbstractPageServlet {
+    PageServlet(PageProvider pageProvider, Map<String, PageTemplate> templates) {
+        super(pageProvider, templates)
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        displayTemplate.applyTo(pageFrom(req)).writeTo(resp.writer)
+    protected PageTemplate templateFor(HttpServletRequest req) {
+        if (req.getParameter('edit') != null) {
+            templates.edit
+        } else {
+            templates.display
+        }
     }
 
-    private Page pageFrom(HttpServletRequest req) {
-        pageFactory.createPage(req.servletContext.getResource(req.servletPath))
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+        String contents = req.getParameter('contents')
+        if (contents != null) {
+            pageProvider.writePage(pagePathFrom(req)) { Writer out -> out.write contents }
+        }
+        doGet(req, resp)
+    }
+
+    @Override
+    protected void pageSourceNotFound(URI pageURI, HttpServletResponse resp) {
+        render(pageProvider.newPageSampleFor(pageURI), templates.create, resp)
     }
 }

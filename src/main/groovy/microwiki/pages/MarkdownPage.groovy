@@ -3,26 +3,34 @@ package microwiki.pages
 import org.pegdown.PegDownProcessor
 
 class MarkdownPage implements Page {
-    private final URL url
-    private final String charset
+    private final def sourceData
+    private final URI uri
+    private final String encoding
 
-    public static PageFactory factoryUsing(final String charset) {
-        {URL url  -> new MarkdownPage(url, charset) } as PageFactory
-    }
-
-    MarkdownPage(URL url, String charset) {
-        this.url = url
-        this.charset = charset
+    MarkdownPage(URI uri, sourceData, String encoding) {
+        this.uri = uri
+        this.sourceData = sourceData
+        this.encoding = encoding
     }
 
     @Override
     Writable getSource() {
-        return ({ Writer out -> out.write url.text }).asWritable()
+        return deferredWriteOf { sourceData.getText(encoding) }
     }
 
     @Override
     Writable getHtml() {
-        return ({ Writer out -> out.write htmlFromMarkdown() }).asWritable()
+        return deferredWriteOf { htmlFromMarkdown() }
+    }
+
+    private Writable deferredWriteOf(Closure cl) {
+        ({ Writer out ->
+            try {
+                out.write cl.call()
+            } catch (FileNotFoundException e) {
+                throw new PageSourceNotFoundException(e)
+            }
+        }).asWritable()
     }
 
     private def htmlFromMarkdown() {
@@ -30,7 +38,12 @@ class MarkdownPage implements Page {
     }
 
     @Override
-    URL getUrl() {
-        return url
+    URI getUri() {
+        return uri
+    }
+
+    @Override
+    String getEncoding() {
+        return encoding
     }
 }

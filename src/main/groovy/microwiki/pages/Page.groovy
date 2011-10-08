@@ -1,9 +1,11 @@
 package microwiki.pages
 
 public interface Page {
-    URL getUrl()
+    URI getUri()
 
     Writable getSource()
 
     Writable getHtml()
+
+    String getEncoding()
 }

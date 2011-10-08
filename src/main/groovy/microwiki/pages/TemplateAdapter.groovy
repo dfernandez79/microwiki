@@ -1,15 +1,16 @@
 package microwiki.pages
 
-import groovy.text.Template
 import groovy.text.GStringTemplateEngine
+import groovy.text.Template
 
 class TemplateAdapter implements PageTemplate {
-    public static PageTemplate  using(URL url) {
-        return new TemplateAdapter(new GStringTemplateEngine().createTemplate(url))
+    public static PageTemplate using(source) {
+        return new TemplateAdapter(new GStringTemplateEngine().createTemplate(source))
     }
+
     private final Template template
 
-    TemplateAdapter(template) {
+    TemplateAdapter(Template template) {
         this.template = template
     }
 
