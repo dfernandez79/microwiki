@@ -2,8 +2,6 @@ package microwiki
 
 import org.eclipse.jetty.server.Server as JettyServer
 
-import microwiki.pages.MarkdownPage
-
 import microwiki.pages.PageTemplate
 import microwiki.pages.TemplateAdapter
 import microwiki.servlets.PageServlet
@@ -16,7 +14,7 @@ import org.eclipse.jetty.servlet.ServletHolder
 import org.eclipse.jetty.util.resource.Resource
 import microwiki.pages.PageProvider
 import javax.servlet.http.HttpServlet
-import microwiki.pages.MarkdownPageProvider
+import microwiki.pages.markdown.MarkdownPageProvider
 
 class Server {
     public static final int DEFAULT_PORT = 9999

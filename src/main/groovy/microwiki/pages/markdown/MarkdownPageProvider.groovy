@@ -1,4 +1,7 @@
-package microwiki.pages
+package microwiki.pages.markdown
+
+import microwiki.pages.PageProvider
+import microwiki.pages.Page
 
 class MarkdownPageProvider implements PageProvider {
     private final String encoding

@@ -1,6 +1,8 @@
-package microwiki.pages
+package microwiki.pages.markdown
 
 import org.pegdown.PegDownProcessor
+import microwiki.pages.Page
+import microwiki.pages.PageSourceNotFoundException
 
 class MarkdownPage implements Page {
     private final def sourceData
