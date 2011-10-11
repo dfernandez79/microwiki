@@ -1,3 +1,58 @@
+html {
+    background: #F1F1F1 none repeat scroll 0 0;
+}
+
+html, body, div, ul, ol, li, dl, dt, dd, h1, h2, h3, h4, h5, h6, pre, form, p, blockquote, fieldset, input {
+    margin: 0;
+    padding: 0;
+}
+
 body {
-    font-family: Verdana
+    font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
+    color: #333;
+    border-radius: 5px;
+}
+
+h1, h2 {
+    font-family: 'Droid Serif', Georgia, Times, serif;
+    margin-top: 0.8em;
+    margin-bottom: 0.3em;
+}
+
+#content {
+    width: auto;
+    padding: 20px 38px 20px;
+    background-color: white;
+    margin: 38px;
+    border-radius: 5px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.1);
+}
+
+#commands {
+    float: right;
+    padding-right: 38px;
+}
+
+hr {
+    border-style: none;
+    background-color: lightgray;
+    height: 1px;
+}
+
+#edit {
+    font-variant: small-caps;
+    text-transform: uppercase;
+    border: 1px solid lightgray;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin: 5px;
+    padding-top: 0px;
+    font-size: 10px;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+#edit a {
+    text-decoration: none;
+    color: lightgray;
 }
