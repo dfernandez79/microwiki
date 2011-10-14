@@ -2,14 +2,23 @@ package microwiki.pages.markdown
 
 import microwiki.pages.Page
 import microwiki.pages.WritablePageProvider
+import microwiki.search.SearchResults
+import microwiki.search.PageSearchStrategy
+import microwiki.search.NullPageSearchStrategy
 
 class MarkdownPageProvider implements WritablePageProvider {
     private final String encoding
     private final URI docRoot
+    private final PageSearchStrategy pageSearchStrategy
 
     MarkdownPageProvider(File docRoot, String encoding) {
+        this(docRoot, encoding, NullPageSearchStrategy.INSTANCE)
+    }
+
+    MarkdownPageProvider(File docRoot, String encoding, PageSearchStrategy searchStrategy) {
         this.docRoot = docRoot.toURI()
         this.encoding = encoding
+        this.pageSearchStrategy = searchStrategy
     }
 
     @Override
@@ -33,5 +42,15 @@ class MarkdownPageProvider implements WritablePageProvider {
     @Override
     Page pageFor(String relativePath) {
         return pageFor(new URI(relativePath))
+    }
+
+    @Override
+    boolean isSearchSupported() {
+        return pageSearchStrategy.searchSupported
+    }
+
+    @Override
+    SearchResults search(String text) {
+        return pageSearchStrategy.search(text)
     }
 }
