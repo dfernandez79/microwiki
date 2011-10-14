@@ -3,7 +3,7 @@ package microwiki
 import org.eclipse.jetty.server.Server as JettyServer
 
 import javax.servlet.http.HttpServlet
-import microwiki.pages.PageProvider
+
 import microwiki.pages.PageTemplate
 import microwiki.pages.TemplateAdapter
 import microwiki.pages.markdown.MarkdownPageProvider
@@ -46,10 +46,13 @@ class Server {
 
         new Server(
                 Resource.newResource(docRoot),
-                options.readonly ?: false,
-                new MarkdownPageProvider(new File(docRoot), encoding),
-                createTemplatesFrom(options),
+                createPageServlet(options.readonly ?: false, new File(docRoot), encoding, createTemplatesFrom(options)),
                 port).start()
+    }
+
+    private static HttpServlet createPageServlet(boolean readonly, File docRoot, String encoding, Templates templates) {
+        def provider = new MarkdownPageProvider(docRoot, encoding)
+        return (readonly) ? new ReadonlyPageServlet(provider, templates) : new PageServlet(provider, templates)
     }
 
     private static Templates createTemplatesFrom(OptionAccessor options) {
@@ -83,35 +86,25 @@ class Server {
     }
 
     private final JettyServer server
-    private final PageProvider pageProvider
-    private final Templates templates
-    private final Resource docRoot
-    private final boolean readonly
+    private final HttpServlet pageServlet
+    private final Resource docRootResource
 
-    Server(Resource docRoot) {
-        this(docRoot, false, new MarkdownPageProvider(docRoot.file, 'UTF-8'), new Templates(), DEFAULT_PORT)
-    }
-
-    Server(Resource docRoot, boolean readonly, PageProvider pageProvider,
-           Templates templates, Integer port) {
-
-        this.docRoot = docRoot
-        this.readonly = readonly
-        this.pageProvider = pageProvider
-        this.templates = templates
+    Server(Resource docRootResource, HttpServlet pageServlet, Integer port) {
+        this.docRootResource = docRootResource
+        this.pageServlet = pageServlet
         server = new JettyServer(port)
         initializeServerHandlers(server)
     }
 
     private def initializeServerHandlers(org.eclipse.jetty.server.Server server) {
         def servletContextHandler = new ServletContextHandler();
-        servletContextHandler.baseResource = docRoot
+        servletContextHandler.baseResource = docRootResource
         servletContextHandler.contextPath = '/';
-        servletContextHandler.addServlet(new ServletHolder(pageServlet()), '*.md');
+        servletContextHandler.addServlet(new ServletHolder(pageServlet), '*.md');
 
         def docRootResourceHandler = new ResourceHandler(
                 directoriesListed: true,
-                baseResource: docRoot)
+                baseResource: docRootResource)
 
         def fallbackResourceHandler = new ResourceHandler(
                 directoriesListed: false,
@@ -124,27 +117,11 @@ class Server {
                 new DefaultHandler()])
     }
 
-    private HttpServlet pageServlet() {
-        if (readonly) {
-            return new ReadonlyPageServlet(pageProvider, templates)
-        } else {
-            return new PageServlet(pageProvider, templates)
-        }
-    }
-
     void start() {
         server.start()
     }
 
     void stop() {
         server.stop()
-    }
-
-    PageProvider getPageProvider() {
-        return pageProvider
-    }
-
-    Templates getTemplates() {
-        return templates
     }
 }

@@ -1,5 +1,8 @@
 package microwiki
 
+import javax.servlet.http.HttpServlet
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 import org.eclipse.jetty.util.resource.Resource
 import spock.lang.Timeout
 
@@ -9,7 +12,13 @@ class ServerSpecification extends spock.lang.Specification {
 
     def setupSpec() {
         tempDirectory = TempDirectory.create()
-        server = new Server(Resource.newResource(tempDirectory))
+        HttpServlet servlet = new HttpServlet() {
+            @Override
+            protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+                resp.writer.print 'Hello From Servlet'
+            }
+        }
+        server = new Server(Resource.newResource(tempDirectory), servlet, Server.DEFAULT_PORT)
         server.start()
     }
 
@@ -57,11 +66,7 @@ class ServerSpecification extends spock.lang.Specification {
         mdFile.text = 'Hello'
 
         expect:
-        contentOf('http://localhost:9999/hello.md') == htmlFor(mdFile)
-    }
-
-    private String htmlFor(File file) {
-        server.templates.display.applyTo(server.pageProvider.pageFor(tempDirectory.toURI().relativize(file.toURI())))
+        contentOf('http://localhost:9999/hello.md') == 'Hello From Servlet'
     }
 
     def "Display command line args help if the --help parameter is given"() {

@@ -1,9 +1,9 @@
 package microwiki.pages.markdown
 
 import microwiki.pages.Page
-import microwiki.pages.PageProvider
+import microwiki.pages.WritablePageProvider
 
-class MarkdownPageProvider implements PageProvider {
+class MarkdownPageProvider implements WritablePageProvider {
     private final String encoding
     private final URI docRoot
 

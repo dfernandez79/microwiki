@@ -7,10 +7,18 @@ html, body, div, ul, ol, li, dl, dt, dd, h1, h2, h3, h4, h5, h6, pre, form, p, b
     padding: 0;
 }
 
+pre, code {
+    font-family: 'Droid Sans Mono', monospace, sans-serif;
+}
+
 body {
     font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
     color: #333;
     border-radius: 5px;
+}
+
+#content>h1:first-child {
+    margin-top: 0;
 }
 
 h1, h2 {
@@ -23,14 +31,16 @@ h1, h2 {
     width: auto;
     padding: 20px 38px 20px;
     background-color: white;
-    margin: 38px;
+    margin: 0px 38px 25px;
     border-radius: 5px;
     box-shadow: 0 0 30px rgba(0,0,0,0.1);
 }
 
 #commands {
-    float: right;
     padding-right: 38px;
+    padding-left: 38px;
+    height: 25px;
+    overflow:  auto;
 }
 
 hr {
@@ -39,20 +49,105 @@ hr {
     height: 1px;
 }
 
-#edit {
+#commands a {
     font-variant: small-caps;
+    font-size: 10px;
+    font-weight: bold;
+    border-radius: 4px;
     text-transform: uppercase;
     border: 1px solid lightgray;
     padding-left: 5px;
     padding-right: 5px;
-    margin: 5px;
     padding-top: 0px;
-    font-size: 10px;
-    font-weight: bold;
-    border-radius: 4px;
-}
-
-#edit a {
     text-decoration: none;
     color: lightgray;
+}
+
+#commands a:hover {
+    border: 1px solid black;
+    background-color: black;
+    color: white;
+}
+
+#edit {
+    float: right;
+}
+
+#save {
+    float: left;
+    padding-top: 2px;
+}
+
+#save a {
+    font-size: 15px;
+    padding-left: 20px;
+    padding-right: 20px;
+    color: darkgreen;
+}
+
+#discard {
+    float: right;
+}
+
+#discard a:hover {
+    background-color: #801b1b;
+    color: white;
+}
+
+.edit #content {
+    padding: 20px !important;
+}
+
+.edit textarea {
+    font-family: 'Droid Sans Mono', monospace, sans-serif;
+    font-size: 12pt;
+    width: 100%;
+    height: 1000px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.1);
+    border:  1px solid lightgray;
+    outline: none;
+    border-radius: 5px;
+}
+
+#quickRef {
+    margin-left: 38px;
+    margin-right: 38px;
+    font-size: 10px;
+    color: #626262;
+    line-height: 2em;
+    padding-top: 25px;
+    padding-bottom: 50px;
+}
+
+#quickRef pre {
+    line-height: 1em;
+    -webkit-column-break-inside: avoid;
+    -moz-column-break-inside: avoid;
+}
+
+#quickRef h1 {
+    font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
+    font-size: 1.5em;
+}
+
+#quickRefContents {
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
+    -webkit-column-gap: 2em;
+    -moz-column-gap: 2em;
+    column-gap: 2em;
+}
+
+#quickRefContents dt {
+    float: left;
+    clear: both;
+    width: 70px;
+    font-variant: small-caps;
+    text-transform: uppercase;
+}
+
+#quickRefContents dd {
+    float: left;
+    margin-bottom: 10px;
 }

@@ -5,13 +5,13 @@ import javax.servlet.http.HttpServletResponse
 import microwiki.TempDirectory
 import microwiki.Templates
 import microwiki.pages.Page
-import microwiki.pages.PageProvider
+import microwiki.pages.WritablePageProvider
 import microwiki.pages.markdown.MarkdownPageProvider
 
 class PageServletSpecification extends spock.lang.Specification {
     private static final URI NOT_FOUND_URI = new URI('notfound.md')
     private Page helloPage
-    private PageProvider pageProvider
+    private WritablePageProvider pageProvider
     private HttpServletResponse response
     private StringWriter responseOutput
     private Templates templates

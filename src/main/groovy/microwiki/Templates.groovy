@@ -6,7 +6,7 @@ import microwiki.pages.TemplateAdapter
 class Templates {
     static PageTemplate DEFAULT_DISPLAY_TEMPLATE = template('display.html')
     static PageTemplate DEFAULT_EDIT_TEMPLATE = template('edit.html')
-    static PageTemplate DEFAULT_CREATE_TEMPLATE = template('create.html')
+    static PageTemplate DEFAULT_CREATE_TEMPLATE = template('edit.html')
     static PageTemplate DEFAULT_READ_TEMPLATE = template('read.html')
 
     public final PageTemplate display
