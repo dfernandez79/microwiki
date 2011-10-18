@@ -7,6 +7,7 @@ import microwiki.Templates
 import microwiki.pages.Page
 import microwiki.pages.WritablePageProvider
 import microwiki.pages.markdown.MarkdownPageProvider
+import microwiki.pages.PageDisplayContext
 
 class PageServletSpecification extends spock.lang.Specification {
     private static final URI NOT_FOUND_URI = new URI('notfound.md')
@@ -63,7 +64,11 @@ class PageServletSpecification extends spock.lang.Specification {
         servlet.doGet(request, response)
 
         then:
-        responseOutput.toString() == templates.display.applyTo(helloPage).toString()
+        responseOutput.toString() == templates.display.applyWith(context(helloPage)).toString()
+    }
+
+    PageDisplayContext context(Page page) {
+        new PageDisplayContext(page, false)
     }
 
     def "When method is GET and the ?edit parameter is specified, display the edit page"() {
@@ -74,7 +79,7 @@ class PageServletSpecification extends spock.lang.Specification {
         servlet.doGet(request, response)
 
         then:
-        responseOutput.toString() == templates.edit.applyTo(helloPage).toString()
+        responseOutput.toString() == templates.edit.applyWith(context(helloPage)).toString()
     }
 
     def "When method is POST and contents is specified, write the page contents"() {
@@ -113,7 +118,7 @@ class PageServletSpecification extends spock.lang.Specification {
         servlet.doGet(request, response)
 
         then:
-        responseOutput.toString() == templates.create.applyTo(pageProvider.newPageSampleFor(NOT_FOUND_URI)).toString()
+        responseOutput.toString() == templates.create.applyWith(context(pageProvider.newPageSampleFor(NOT_FOUND_URI))).toString()
     }
 
     def "If the file is not found and the ?edit parameter is specified, display the edit page with the new file action"() {
@@ -124,6 +129,6 @@ class PageServletSpecification extends spock.lang.Specification {
         servlet.doGet(request, response)
 
         then:
-        responseOutput.toString() == templates.create.applyTo(pageProvider.newPageSampleFor(NOT_FOUND_URI)).toString()
+        responseOutput.toString() == templates.create.applyWith(context(pageProvider.newPageSampleFor(NOT_FOUND_URI))).toString()
     }
 }

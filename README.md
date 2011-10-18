@@ -48,3 +48,7 @@ welcome.
  * Shortcuts in the edit page
 
  * Preview in the edit page
+
+ * Configuration UI
+
+ * Integration with Growl on MacOSX

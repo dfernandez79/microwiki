@@ -8,6 +8,7 @@ import microwiki.pages.Page
 import microwiki.pages.PageProvider
 import microwiki.pages.PageSourceNotFoundException
 import microwiki.pages.PageTemplate
+import microwiki.pages.PageDisplayContext
 
 abstract class AbstractPageServlet extends HttpServlet {
     private static final int RESPONSE_BUFFER_SIZE = 64 * 1024
@@ -31,18 +32,21 @@ abstract class AbstractPageServlet extends HttpServlet {
             pageSourceNotFound(pageURI, resp)
         }
     }
-
-    protected abstract void pageSourceNotFound(URI pageURI, HttpServletResponse resp)
-
     protected def render(Page page, PageTemplate template, HttpServletResponse resp) {
         resp.contentType = 'text/html'
         resp.characterEncoding = page.encoding
-        template.applyTo(page).writeTo(resp.writer)
+        template.applyWith(displayContextFor(page)).writeTo(resp.writer)
+    }
+
+    protected PageDisplayContext displayContextFor(Page page) {
+        new PageDisplayContext(page, pageProvider.searchSupported)
     }
 
     private Page pageFor(URI pageURI) {
         return pageProvider.pageFor(pageURI)
     }
+
+    protected abstract void pageSourceNotFound(URI pageURI, HttpServletResponse resp)
 
     protected abstract PageTemplate templateFor(HttpServletRequest req)
 

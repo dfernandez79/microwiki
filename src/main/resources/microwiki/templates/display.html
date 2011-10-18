@@ -7,9 +7,11 @@
 </head>
 <body>
 <div id="commands">
+    <%  if (!searchSupported) { %>
+    <div id="search"><form action="/search"><input placeholder="Search" name="q" type="search" /></form></div>
+    <% } %>
     <div id="edit"><a href="?edit">Edit</a></div>
 </div>
-<div id="content">
-${page.html}</div>
+<div id="content">${page.html}</div>
 </body>
 </html>

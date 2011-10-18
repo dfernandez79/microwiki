@@ -15,7 +15,7 @@ class TemplateAdapter implements PageTemplate {
     }
 
     @Override
-    Writable applyTo(Page page) {
-        return template.make(page: page)
+    Writable applyWith(PageDisplayContext context) {
+        return template.make(context.asMap())
     }
 }

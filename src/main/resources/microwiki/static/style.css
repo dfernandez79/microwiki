@@ -1,5 +1,5 @@
 html {
-    background: #F1F1F1 none repeat scroll 0 0;
+    background: #E0E0E0 none repeat scroll 0 0;
 }
 
 html, body, div, ul, ol, li, dl, dt, dd, h1, h2, h3, h4, h5, h6, pre, form, p, blockquote, fieldset, input {
@@ -7,8 +7,25 @@ html, body, div, ul, ol, li, dl, dt, dd, h1, h2, h3, h4, h5, h6, pre, form, p, b
     padding: 0;
 }
 
+ul, ol {
+    padding-left: 40px;
+    margin-bottom: 1em;
+}
+
 pre, code {
     font-family: 'Droid Sans Mono', monospace, sans-serif;
+    font-size: 95%;
+}
+
+pre {
+    background-color: #f1f1f1;
+    padding:  0.5em;
+    border-left:  6px solid lightgray;
+    margin-bottom: 1em;
+}
+
+p {
+    margin-bottom: 1em;
 }
 
 body {
@@ -29,24 +46,28 @@ h1, h2 {
 
 #content {
     width: auto;
-    padding: 20px 38px 20px;
+    padding: 38px;
     background-color: white;
     margin: 0px 38px 25px;
     border-radius: 5px;
-    box-shadow: 0 0 30px rgba(0,0,0,0.1);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+}
+
+#content a {
+    color: #7652ba;
 }
 
 #commands {
     padding-right: 38px;
     padding-left: 38px;
-    height: 25px;
+    height: 38px;
     overflow:  auto;
 }
 
 hr {
     border-style: none;
     background-color: lightgray;
-    height: 1px;
+    height: 3px;
 }
 
 #commands a {
@@ -55,12 +76,12 @@ hr {
     font-weight: bold;
     border-radius: 4px;
     text-transform: uppercase;
-    border: 1px solid lightgray;
+    border: 1px solid gray;
     padding-left: 5px;
     padding-right: 5px;
     padding-top: 0px;
     text-decoration: none;
-    color: lightgray;
+    color: gray;
 }
 
 #commands a:hover {
@@ -69,24 +90,27 @@ hr {
     color: white;
 }
 
-#edit {
-    float: right;
+#edit, #discard {
+    position: absolute;
+    right: 45px;
+    top: 40px;
+}
+
+#edit a {
+    border-color:  lightgray;
+    color: lightgray;
 }
 
 #save {
-    float: left;
-    padding-top: 2px;
+    position: absolute;
+    left: 46px;
+    top: 45px;
 }
 
 #save a {
     font-size: 15px;
     padding-left: 20px;
     padding-right: 20px;
-    color: darkgreen;
-}
-
-#discard {
-    float: right;
 }
 
 #discard a:hover {
@@ -95,14 +119,15 @@ hr {
 }
 
 .edit #content {
-    padding: 20px !important;
+    padding-left: 8px !important;
+    padding-right: 13px !important
 }
 
 .edit textarea {
     font-family: 'Droid Sans Mono', monospace, sans-serif;
-    font-size: 12pt;
+    font-size: 10pt;
     width: 100%;
-    height: 1000px;
+    height: 500px;
     box-shadow: 0 0 30px rgba(0,0,0,0.1);
     border:  1px solid lightgray;
     outline: none;
@@ -117,12 +142,13 @@ hr {
     line-height: 2em;
     padding-top: 25px;
     padding-bottom: 50px;
+    overflow: auto;
 }
 
 #quickRef pre {
-    line-height: 1em;
-    -webkit-column-break-inside: avoid;
-    -moz-column-break-inside: avoid;
+    line-height: 1.5em;
+    background: transparent;
+    border:  0px none;
 }
 
 #quickRef h1 {
@@ -131,18 +157,15 @@ hr {
 }
 
 #quickRefContents {
-    -webkit-column-count: 2;
-    -moz-column-count: 2;
-    column-count: 2;
-    -webkit-column-gap: 2em;
-    -moz-column-gap: 2em;
-    column-gap: 2em;
+    overflow: auto;
+    margin-left: 2em;
+    margin-top: 2em;
 }
 
 #quickRefContents dt {
     float: left;
     clear: both;
-    width: 70px;
+    width: 10em;
     font-variant: small-caps;
     text-transform: uppercase;
 }
@@ -150,4 +173,16 @@ hr {
 #quickRefContents dd {
     float: left;
     margin-bottom: 10px;
+    width: 40em;
+    line-height: 1.5em;
+}
+
+#search {
+    width: 10%;
+    float: right;
+}
+
+#search input {
+    width: 100%;
+    margin-top: 8px;
 }
