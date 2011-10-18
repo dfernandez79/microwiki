@@ -14,9 +14,16 @@ repositories {
 
 dependencies {
     groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '1.8.2'
-    compile group: 'org.pegdown', name: 'pegdown', version: '1.0.2'
-    compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '8.0.1.v20110908'
-    compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '8.0.1.v20110908'
     compile group: 'commons-cli', name: 'commons-cli', version: '1.2'
+    compile group: 'org.pegdown', name: 'pegdown', version: '1.0.2'
+    compile jettyDependencies()
     testCompile group: 'org.spockframework', name: 'spock-core', version: '0.6-groovy-1.8-SNAPSHOT'
+}
+
+def jettyDependencies() {
+    dependenciesFor group: 'org.eclipse.jetty', version: '8.0.3.v20111011', names: ['jetty-server', 'jetty-servlet']
+}
+
+def dependenciesFor(params) {
+    params.names.collect { [group: params.group, version: params.version, name: it ]}
 }
