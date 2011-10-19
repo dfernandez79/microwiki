@@ -15,40 +15,84 @@ Some of the characteristics of microwiki are:
 *  No configuration needed: start microwiki in your document folder and you are
    done.
 
-[1]: http://daringfireball.net/projects/markdown/
 
-Things to do
+
+Roadmap
 =======
 
-These are some things to do (in no particular order). I'm going to implement them
-as my time allows it, but if you want to help... do a fork and send patches, they are
-welcome.
+This is the prioritized backlog of things to do for the 1.0 release:
 
-* Search functionality
+1. Search functionality
+
+2. Executable package
+  *  [OneJar][2]
+
+3. Zero configuration startup
+   * When microwiki is started show the README.md in the current directory
+
+   * If no README.md is found look for a docs sub-directory and show the
+     index.md file in it
+
+   * Remove the command line arguments and use a configuration file
+
+      * Detect if the configuration file is present in the current directory and use
+        it by default
+
+4. Better directory index
+   * Display only .md, .html and image files
+
+      * For .md files display a teasser of the file contents
+
+   * Allow to seach for files
+
+   * Allow to create sub-directories
+
+5. Update the license information
+   * The project is going to use Apache v2 license
+     * Put the required license messages
+     * Put recognition of other used files/projects: Droid fonts, PegDown parser, Groovy, Jetty
+
+Some things that I consider nice to have for a later release are (in no particular
+order):
+
+* Side bar (like Google Docs Wiki)
+
+* Print page, with custom stylesheet to make the pages look nice when printed
+
+  * URLs should be displayed as footnotes
+
+  * Show a warning to the user to not spent unecessary paper
 
 * Edit warning (if you change something that was already changed, the wiki should
   show a warning, and it will be cool if it allows you to do a merge)
 
-* Print page
+* Shortcuts in the edit page, ie: Ctrl-S to Save
 
-* Executable package
+* Integration with Ant/Gradle/Maven
 
-* Automatic recognition of docs sub-folders
+* Extension to allow the use of LaTeX expressions in code blocks
 
-* Side bar (like Google Docs Wiki)
+* Extension to allow UML and GrapViz files
 
-* A nice directory listing page (instead of the default used by Jetty)
+  *  For example image links to files with .uml.svg or .uml.png are handled by a
+     servlet that renders the UML from a text source (probably using [PlantUml][3])
 
- * Redirect of / to /index.md
+* Preview in the edit page
 
- * Integration with Ant/Gradle/Maven
+* MacOSX integration
+  * Bundle the JAR in a Mac application bundle
+  * When started from app bundle show a UI to choose the docroot directory
+  * Allow to control the server from the UI (start/stop/re-index files)
 
- * Extension to allow the use of LaTeX expressions in code blocks
+* Windows integration
+  * Same startup UI as MacOSX but use a system tray icon
 
- * Shortcuts in the edit page
+* IDE integration (Eclipse/IDEA/NetBeans)
+   * Right click in a project to show the documentation, starts the server and shows
+     the internal eclipse web browser to display the docs
 
- * Preview in the edit page
+   * Links to classes displays the "Open Type" functionality in Eclipse
 
- * Configuration UI
-
- * Integration with Growl on MacOSX
+[1]: http://daringfireball.net/projects/markdown/
+[2]: http://one-jar.sourceforge.net/
+[3]: http://plantuml.sourceforge.net/
