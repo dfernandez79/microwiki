@@ -1,15 +1,15 @@
 package microwiki.search
 
 enum NullPageSearchStrategy implements PageSearchStrategy {
-    INSTANCE;
+    INSTANCE
 
     @Override
-    SearchResults search(String text) {
-        return SearchResults.empty()
+    SearchResults search(String text, SearchResultsDisplayOptions options) {
+        new SearchResults(options, 0, Collections.<SearchResult> emptyList())
     }
 
     @Override
     boolean isSearchSupported() {
-        return false
+        false
     }
 }

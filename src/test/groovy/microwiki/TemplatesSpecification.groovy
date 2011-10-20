@@ -26,6 +26,6 @@ class TemplatesSpecification extends spock.lang.Specification {
                 read: TEST_TEMPLATE
         ]
         config.remove(templateName)
-        return new Templates(config)
+        new Templates(config)
     }
 }

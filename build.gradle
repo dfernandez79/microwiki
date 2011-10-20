@@ -1,10 +1,12 @@
 apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
+apply plugin: 'code-quality'
 
 javaVersion = '1.6'
 sourceCompatibility = javaVersion
 targetCompatibility = javaVersion
+codeNarcConfigFileName = 'config/codenarc/ruleset.groovy'
 
 repositories {
     mavenCentral()
@@ -14,14 +16,44 @@ repositories {
 
 dependencies {
     groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '1.8.2'
-    compile group: 'commons-cli', name: 'commons-cli', version: '1.2'
-    compile group: 'org.pegdown', name: 'pegdown', version: '1.0.2'
-    compile jettyDependencies()
+    compile commandLineInterfaceDependencies()
+    compile wikiParsingDependencies()
+    compile webServerDependencies()
+    compile searchDependencies()
     testCompile group: 'org.spockframework', name: 'spock-core', version: '0.6-groovy-1.8-SNAPSHOT'
 }
 
-def jettyDependencies() {
-    dependenciesFor group: 'org.eclipse.jetty', version: '8.0.3.v20111011', names: ['jetty-server', 'jetty-servlet']
+/*
+ Dependencies used by the server functionality.
+ It allows the application to work as a web server
+ */
+def webServerDependencies() {
+    [group: 'org.eclipse.jetty', version: '8.0.3.v20111011', name:'jetty-servlet']
+}
+
+/*
+ Dependencies used by the search functionality.
+ It allows to do a fast page search
+ */
+def searchDependencies() {
+    [
+            [group: 'org.apache.commons', name: 'commons-vfs2', version: '2.0'],
+            [group: 'org.apache.lucene', version: '3.4.0', name: 'lucene-core']
+    ]
+}
+
+/*
+ Dependencies used to parse the Wiki markup.
+ */
+def wikiParsingDependencies() {
+    [group: 'org.pegdown', name: 'pegdown', version: '1.0.2']
+}
+
+/*
+  Dependencies to support the command line interface.
+ */
+def commandLineInterfaceDependencies() {
+    [group: 'commons-cli', name: 'commons-cli', version: '1.2']
 }
 
 def dependenciesFor(params) {

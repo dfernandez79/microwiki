@@ -1,11 +1,9 @@
 package microwiki.search
 
-class SearchResults {
-    static SearchResults empty() {
-        return new SearchResults()
-    }
+import groovy.transform.Immutable
 
-    boolean isEmpty() {
-        return true
-    }
+@Immutable final class SearchResults {
+    SearchResultsDisplayOptions options
+    int total
+    List<SearchResult> retrievedResults
 }

@@ -2,9 +2,10 @@ package microwiki.pages.markdown
 
 import microwiki.pages.Page
 import microwiki.pages.WritablePageProvider
-import microwiki.search.SearchResults
-import microwiki.search.PageSearchStrategy
 import microwiki.search.NullPageSearchStrategy
+import microwiki.search.PageSearchStrategy
+import microwiki.search.SearchResults
+import microwiki.search.SearchResultsDisplayOptions
 
 class MarkdownPageProvider implements WritablePageProvider {
     private final String encoding
@@ -26,31 +27,36 @@ class MarkdownPageProvider implements WritablePageProvider {
         if (uri.isAbsolute() && docRoot.relativize(uri).isAbsolute()) {
             throw new IllegalArgumentException("Only URIs relative $docRoot are allowed")
         }
-        return new MarkdownPage(docRoot.relativize(uri), docRoot.resolve(uri).toURL(), encoding)
+        new MarkdownPage(docRoot.relativize(uri), docRoot.resolve(uri).toURL(), encoding)
     }
 
     @Override
     Page newPageSampleFor(URI uri) {
-        return new MarkdownPage(docRoot.relativize(uri), getClass().getResource('/microwiki/templates/newpage.md'), 'UTF-8')
+        new MarkdownPage(docRoot.relativize(uri), getClass().getResource('/microwiki/templates/newpage.md'), 'UTF-8')
     }
 
     @Override
-    public <T> T writePage(URI uri, Closure<T> closure) {
+    <T> T writePage(URI uri, Closure<T> closure) {
         new File(docRoot.resolve(uri)).withWriter closure
     }
 
     @Override
     Page pageFor(String relativePath) {
-        return pageFor(new URI(relativePath))
+        pageFor(new URI(relativePath))
     }
 
     @Override
     boolean isSearchSupported() {
-        return pageSearchStrategy.searchSupported
+        pageSearchStrategy.searchSupported
     }
 
     @Override
     SearchResults search(String text) {
-        return pageSearchStrategy.search(text)
+        search(text, SearchResultsDisplayOptions.defaultOptions())
+    }
+
+    @Override
+    SearchResults search(String text, SearchResultsDisplayOptions options) {
+        pageSearchStrategy.search(text, options)
     }
 }

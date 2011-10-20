@@ -1,6 +1,6 @@
 package microwiki.pages
 
-public interface Page {
+interface Page {
     URI getUri()
 
     Writable getSource()

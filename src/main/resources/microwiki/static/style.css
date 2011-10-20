@@ -19,9 +19,16 @@ pre, code {
 
 pre {
     background-color: #f1f1f1;
-    padding:  0.5em;
-    border-left:  6px solid lightgray;
+}
+
+blockquote, pre {
+    padding: 0.5em;
+    border-left: 6px solid lightgray;
     margin-bottom: 1em;
+}
+
+blockquote>p:last-child {
+    margin-bottom: 0;
 }
 
 p {
@@ -50,7 +57,7 @@ h1, h2 {
     background-color: white;
     margin: 0px 38px 25px;
     border-radius: 5px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
 
 #content a {
@@ -61,7 +68,7 @@ h1, h2 {
     padding-right: 38px;
     padding-left: 38px;
     height: 38px;
-    overflow:  auto;
+    overflow: auto;
 }
 
 hr {
@@ -97,7 +104,7 @@ hr {
 }
 
 #edit a {
-    border-color:  lightgray;
+    border-color: lightgray;
     color: lightgray;
 }
 
@@ -128,8 +135,8 @@ hr {
     font-size: 10pt;
     width: 100%;
     height: 500px;
-    box-shadow: 0 0 30px rgba(0,0,0,0.1);
-    border:  1px solid lightgray;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid lightgray;
     outline: none;
     border-radius: 5px;
 }
@@ -148,7 +155,7 @@ hr {
 #quickRef pre {
     line-height: 1.5em;
     background: transparent;
-    border:  0px none;
+    border: 0px none;
 }
 
 #quickRef h1 {

@@ -18,6 +18,6 @@ class ReadonlyPageServlet extends AbstractPageServlet {
 
     @Override
     protected PageTemplate templateFor(HttpServletRequest req) {
-        return templates.read
+        templates.read
     }
 }

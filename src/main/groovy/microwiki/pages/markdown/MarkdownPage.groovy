@@ -5,24 +5,16 @@ import microwiki.pages.PageSourceNotFoundException
 import org.pegdown.PegDownProcessor
 
 class MarkdownPage implements Page {
-    private final def sourceData
-    private final URI uri
-    private final String encoding
+    final URI uri
+    final String encoding
+    final Writable source
+    final Writable html
 
     MarkdownPage(URI uri, sourceData, String encoding) {
         this.uri = uri
-        this.sourceData = sourceData
         this.encoding = encoding
-    }
-
-    @Override
-    Writable getSource() {
-        return deferredWriteOf { sourceData.getText(encoding) }
-    }
-
-    @Override
-    Writable getHtml() {
-        return deferredWriteOf { htmlFromMarkdown() }
+        this.source = deferredWriteOf { sourceData.getText(encoding) }
+        this.html = deferredWriteOf { htmlFromMarkdown() }
     }
 
     private Writable deferredWriteOf(Closure cl) {
@@ -35,17 +27,7 @@ class MarkdownPage implements Page {
         }).asWritable()
     }
 
-    private def htmlFromMarkdown() {
-        new PegDownProcessor().markdownToHtml(getSource().toString())
-    }
-
-    @Override
-    URI getUri() {
-        return uri
-    }
-
-    @Override
-    String getEncoding() {
-        return encoding
+    private htmlFromMarkdown() {
+        new PegDownProcessor().markdownToHtml(source.toString())
     }
 }

@@ -4,11 +4,7 @@ import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import microwiki.Templates
-import microwiki.pages.Page
-import microwiki.pages.PageProvider
-import microwiki.pages.PageSourceNotFoundException
-import microwiki.pages.PageTemplate
-import microwiki.pages.PageDisplayContext
+import microwiki.pages.*
 
 abstract class AbstractPageServlet extends HttpServlet {
     private static final int RESPONSE_BUFFER_SIZE = 64 * 1024
@@ -32,7 +28,8 @@ abstract class AbstractPageServlet extends HttpServlet {
             pageSourceNotFound(pageURI, resp)
         }
     }
-    protected def render(Page page, PageTemplate template, HttpServletResponse resp) {
+
+    protected render(Page page, PageTemplate template, HttpServletResponse resp) {
         resp.contentType = 'text/html'
         resp.characterEncoding = page.encoding
         template.applyWith(displayContextFor(page)).writeTo(resp.writer)
@@ -43,7 +40,7 @@ abstract class AbstractPageServlet extends HttpServlet {
     }
 
     private Page pageFor(URI pageURI) {
-        return pageProvider.pageFor(pageURI)
+        pageProvider.pageFor(pageURI)
     }
 
     protected abstract void pageSourceNotFound(URI pageURI, HttpServletResponse resp)
@@ -51,6 +48,6 @@ abstract class AbstractPageServlet extends HttpServlet {
     protected abstract PageTemplate templateFor(HttpServletRequest req)
 
     protected URI pagePathFrom(HttpServletRequest req) {
-        return new URI(req.servletPath.substring(1))
+        new URI(req.servletPath.substring(1))
     }
 }

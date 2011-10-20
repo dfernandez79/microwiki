@@ -2,44 +2,49 @@
 <html>
 <head>
     <title>${page.uri.path}</title>
-    <link href="/fonts.css" rel="stylesheet" type="text/css" />
-    <link  href="/style.css" rel="stylesheet"  type="text/css" />
+    <link href="/fonts.css" rel="stylesheet" type="text/css"/>
+    <link href="/style.css" rel="stylesheet" type="text/css"/>
 </head>
 <body class="edit">
 <form id="editForm" method="POST" action="${page.uri.path}" accept-charset="UTF-8">
     <div id="commands">
         <div id="discard"><a href="${page.uri.path}">Discard changes</a></div>
-        <div  id="save"><a href="${page.uri.path}" onclick="document.forms.editForm.submit()">Save</a></div>
+        <div id="save"><a href="${page.uri.path}" onclick="document.forms.editForm.submit()">Save</a></div>
     </div>
     <div id="content">
-    <textarea id="contents" name="contents">${page.source}</textarea>
+        <textarea id="contents" name="contents">${page.source}</textarea>
     </div>
- </form>
+</form>
 <div id="quickRef">
     <h1>Syntax Quick Reference</h1>
+
     <div id="quickRefContents">
         <dl>
-        <dt>Paragraph</dt>
-        <dd>A paragraph is simply one or more consecutive lines of text, separated
-         by one or more blank lines.</dd>
-        <dt>Headers</dt>
-        <dd>Headers are “underlined” using equal signs (for first-level headers)
-         and dashes (for second-level headers). Example:
+            <dt>Paragraph</dt>
+            <dd>A paragraph is simply one or more consecutive lines of text, separated
+                by one or more blank lines.
+            </dd>
+            <dt>Headers</dt>
+            <dd>Headers are “underlined” using equal signs (for first-level headers)
+                and dashes (for second-level headers). Example:
 <pre>This is an H1
 ============
 
 This is an H2
--------------</pre></dd>
+-------------</pre>
+            </dd>
             <dt>Blockquotes</dt>
             <dd>Uses email-style &gt; characters for blockquoting. Example:
 <pre>&gt; This is a blockquote with two paragraphs. Lorem ipsum dolor sit amet,
-&gt; consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.</pre></dd>
+&gt; consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.</pre>
+            </dd>
             <dt>Links</dt>
             <dd>Write them like this: <code>[This link](http://example.net/)</code>
                 , or using references:
 <pre>This is [an example] [id] reference-style link.
 
-[id]: http://example.com/  "Optional Title Here"</pre></dd>
+[id]: http://example.com/  "Optional Title Here"</pre>
+            </dd>
             <dt>Emphasis</dt>
             <dd>Wrap text with <code>*</code> for bold or <code>_</code> for italic.
                 Example: <code>*bold* or _italic_</code></dd>
@@ -50,11 +55,12 @@ This is an H2
 This is a normal paragraph:
 
     This is a code block.
-</pre></dd>
+</pre>
+            </dd>
             <dt>Images</dt>
             <dd>Like links but with an exclamation mark (!) at the beginning. Example:
                 <code>![My photo](/photo.jpg)</code></dd>
-     </dl>
+        </dl>
     </div>
 </div>
 </body>

@@ -1,7 +1,7 @@
 package microwiki.pages
 
-public interface WritablePageProvider extends PageProvider {
+interface WritablePageProvider extends PageProvider {
     Page newPageSampleFor(URI uri)
 
-    public <T> T writePage(URI uri, Closure<T> closure)
+    def <T> T writePage(URI uri, Closure<T> closure)
 }

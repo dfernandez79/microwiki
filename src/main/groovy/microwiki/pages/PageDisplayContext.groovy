@@ -10,6 +10,6 @@ class PageDisplayContext {
     }
 
     Map asMap() {
-        return [page: page, searchSupported: searchSupported]
+        [page: page, searchSupported: searchSupported]
     }
 }

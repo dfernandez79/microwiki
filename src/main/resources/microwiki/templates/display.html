@@ -2,13 +2,15 @@
 <html>
 <head>
     <title>${page.uri.path}</title>
-    <link href="/fonts.css" rel="stylesheet" type="text/css" />
-    <link  href="/style.css" rel="stylesheet"  type="text/css" />
+    <link href="/fonts.css" rel="stylesheet" type="text/css"/>
+    <link href="/style.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="commands">
-    <%  if (!searchSupported) { %>
-    <div id="search"><form action="/search"><input placeholder="Search" name="q" type="search" /></form></div>
+    <% if (!searchSupported) { %>
+    <div id="search">
+        <form action="/search"><input placeholder="Search" name="q" type="search"/></form>
+    </div>
     <% } %>
     <div id="edit"><a href="?edit">Edit</a></div>
 </div>

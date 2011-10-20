@@ -87,6 +87,6 @@ class ServerSpecification extends spock.lang.Specification {
         } finally {
             System.setOut(oldOut)
         }
-        return out.toString()
+        out.toString()
     }
 }

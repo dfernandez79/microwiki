@@ -3,7 +3,6 @@ package microwiki
 import org.eclipse.jetty.server.Server as JettyServer
 
 import javax.servlet.http.HttpServlet
-
 import microwiki.pages.PageTemplate
 import microwiki.pages.TemplateAdapter
 import microwiki.pages.markdown.MarkdownPageProvider
@@ -21,7 +20,7 @@ class Server {
     public static final String DEFAULT_ENCODING = 'UTF-8'
     private static final CliBuilder CMD_LINE_PARSER = commandLineOptions()
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         def options = CMD_LINE_PARSER.parse(args)
         if (options == null || options.help) {
             showCommandLineHelp()
@@ -34,7 +33,7 @@ class Server {
         CMD_LINE_PARSER.usage()
     }
 
-    private static def startWith(OptionAccessor options) {
+    private static startWith(OptionAccessor options) {
         def port = options.port ?: DEFAULT_PORT
         def docRoot = options.arguments().isEmpty() ? new File('.').canonicalPath : options.arguments().get(0)
         def encoding = options.encoding ?: DEFAULT_ENCODING
@@ -52,11 +51,11 @@ class Server {
 
     private static HttpServlet createPageServlet(boolean readonly, File docRoot, String encoding, Templates templates) {
         def provider = new MarkdownPageProvider(docRoot, encoding)
-        return (readonly) ? new ReadonlyPageServlet(provider, templates) : new PageServlet(provider, templates)
+        (readonly) ? new ReadonlyPageServlet(provider, templates) : new PageServlet(provider, templates)
     }
 
     private static Templates createTemplatesFrom(OptionAccessor options) {
-        return new Templates(
+        new Templates(
                 display: template(options.getOptionValue('dt'), 'Display template'),
                 edit: template(options.getOptionValue('et'), 'Edit template'),
                 create: template(options.getOptionValue('ct'), 'Create template'),
@@ -65,15 +64,17 @@ class Server {
 
     private static CliBuilder commandLineOptions() {
         def cli = new CliBuilder(usage: 'uwiki [options] <docroot>', header: 'Options:')
-        cli.p(longOpt: 'port', args: 1, argName: 'port', "The port used to listen for HTTP request ($DEFAULT_PORT by default)")
-        cli.dt(longOpt: 'display-template', args: 1, argName: 'path', 'Template used to display pages')
-        cli.et(longOpt: 'edit-template', args: 1, argName: 'path', 'Template used to edit pages')
-        cli.ct(longOpt: 'create-template', args: 1, argName: 'path', 'Template used to create pages')
-        cli.rt(longOpt: 'read-template', args: 1, argName: 'path', 'Template used to display pages in the read only mode')
-        cli.r(longOpt: 'readonly', 'Starts the server in read only mode (page edit is not allowed)')
-        cli.e(longOpt: 'encoding', args: 1, argName: 'encoding', "Encoding used to read the wiki files ($DEFAULT_ENCODING by default)")
-        cli._(longOpt: 'help', 'Displays this message')
-        return cli
+        cli.with {
+            p(longOpt: 'port', args: 1, argName: 'port', "The port used to listen for HTTP request ($DEFAULT_PORT by default)")
+            dt(longOpt: 'display-template', args: 1, argName: 'path', 'Template used to display pages')
+            et(longOpt: 'edit-template', args: 1, argName: 'path', 'Template used to edit pages')
+            ct(longOpt: 'create-template', args: 1, argName: 'path', 'Template used to create pages')
+            rt(longOpt: 'read-template', args: 1, argName: 'path', 'Template used to display pages in the read only mode')
+            r(longOpt: 'readonly', 'Starts the server in read only mode (page edit is not allowed)')
+            e(longOpt: 'encoding', args: 1, argName: 'encoding', "Encoding used to read the wiki files ($DEFAULT_ENCODING by default)")
+            _(longOpt: 'help', 'Displays this message')
+        }
+        cli
     }
 
     private static PageTemplate template(String option, String msg) {
@@ -96,11 +97,11 @@ class Server {
         initializeServerHandlers(server)
     }
 
-    private def initializeServerHandlers(org.eclipse.jetty.server.Server server) {
-        def servletContextHandler = new ServletContextHandler();
+    private initializeServerHandlers(org.eclipse.jetty.server.Server server) {
+        def servletContextHandler = new ServletContextHandler()
         servletContextHandler.baseResource = docRootResource
-        servletContextHandler.contextPath = '/';
-        servletContextHandler.addServlet(new ServletHolder(pageServlet), '*.md');
+        servletContextHandler.contextPath = '/'
+        servletContextHandler.addServlet(new ServletHolder(pageServlet), '*.md')
 
         def docRootResourceHandler = new ResourceHandler(
                 directoriesListed: true,

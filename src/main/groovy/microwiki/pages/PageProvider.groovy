@@ -1,6 +1,7 @@
 package microwiki.pages
 
 import microwiki.search.SearchResults
+import microwiki.search.SearchResultsDisplayOptions
 
 interface PageProvider {
     Page pageFor(URI uri)
@@ -10,4 +11,6 @@ interface PageProvider {
     boolean isSearchSupported()
 
     SearchResults search(String text)
+
+    SearchResults search(String text, SearchResultsDisplayOptions options)
 }

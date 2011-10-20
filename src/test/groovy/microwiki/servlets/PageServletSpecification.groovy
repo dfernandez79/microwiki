@@ -5,9 +5,9 @@ import javax.servlet.http.HttpServletResponse
 import microwiki.TempDirectory
 import microwiki.Templates
 import microwiki.pages.Page
+import microwiki.pages.PageDisplayContext
 import microwiki.pages.WritablePageProvider
 import microwiki.pages.markdown.MarkdownPageProvider
-import microwiki.pages.PageDisplayContext
 
 class PageServletSpecification extends spock.lang.Specification {
     private static final URI NOT_FOUND_URI = new URI('notfound.md')
@@ -37,11 +37,11 @@ class PageServletSpecification extends spock.lang.Specification {
         helloPage = pageProvider.pageFor('hello.md')
 
         response = Mock()
-        response.setContentType('text/html')
-        response.setCharacterEncoding('UTF-8')
+        response.contentType = 'text/html'
+        response.characterEncoding = 'UTF-8'
         responseOutput = new StringWriter()
-        response.getWriter() >> { new PrintWriter(responseOutput) }
-        response.reset() >> { responseOutput.getBuffer().setLength(0) }
+        response.writer >> { new PrintWriter(responseOutput) }
+        response.reset() >> { responseOutput.buffer.length = 0 }
 
         templates = new Templates()
         servlet = new PageServlet(pageProvider, templates)
@@ -53,7 +53,7 @@ class PageServletSpecification extends spock.lang.Specification {
         if (parameters != null) {
             req.getParameter(_ as String) >> { parameters.get(it.get(0)) }
         }
-        return req
+        req
     }
 
     def "When method is GET display the page"() {
