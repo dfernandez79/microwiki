@@ -18,6 +18,10 @@ class Server {
     private final HttpServlet pageServlet
     private final Resource docRootResource
 
+    Server(File docRoot, HttpServlet pageServlet, Integer port) {
+        this(Resource.newResource(docRoot), pageServlet, port)
+    }
+
     Server(Resource docRootResource, HttpServlet pageServlet, Integer port) {
         this.docRootResource = docRootResource
         this.pageServlet = pageServlet
@@ -50,11 +54,11 @@ class Server {
         server.start()
     }
 
-    void startAndJoin() {
-        start()
-        server.join()
-    }
     void stop() {
         server.stop()
+    }
+
+    void join() {
+        server.join()
     }
 }

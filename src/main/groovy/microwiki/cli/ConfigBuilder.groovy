@@ -1,16 +1,18 @@
 package microwiki.cli
 
 import microwiki.Server
-import microwiki.Templates
+
 import microwiki.pages.PageTemplate
 import microwiki.pages.TemplateAdapter
+import microwiki.pages.Templates
 
 class ConfigBuilder {
     final ServerConfigBuilder server = new ServerConfigBuilder()
+    final SearchConfigBuilder search = new SearchConfigBuilder()
     final TemplatesBuilder templates = new TemplatesBuilder()
 
     Config build() {
-        new Config(server.build(), templates.build())
+        new Config(server.build(), search.build(), templates.build())
     }
 
     public static class ServerConfigBuilder {
@@ -20,6 +22,14 @@ class ConfigBuilder {
 
         ServerConfig build() {
             new ServerConfig(port, encoding, readOnly)
+        }
+    }
+
+    public static class SearchConfigBuilder {
+        boolean enabled = true
+
+        SearchConfig build() {
+            new SearchConfig(enabled)
         }
     }
 
@@ -39,11 +49,11 @@ class ConfigBuilder {
 
         private PageTemplate template(source) {
             if (source instanceof PageTemplate) {
-                return source
+                source
             } else if (source instanceof String) {
-                return TemplateAdapter.using(new File(source))
+                TemplateAdapter.using(new File(source))
             } else {
-                return TemplateAdapter.using(source)
+                TemplateAdapter.using(source)
             }
         }
     }

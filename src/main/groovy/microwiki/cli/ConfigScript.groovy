@@ -8,4 +8,8 @@ abstract class ConfigScript extends Script {
     void templates(Closure closure) {
         binding.builder.templates.with closure
     }
+
+    void search(Closure closure) {
+        binding.builder.search.with closure
+    }
 }

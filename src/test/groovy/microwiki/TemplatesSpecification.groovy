@@ -2,6 +2,7 @@ package microwiki
 
 import microwiki.pages.Page
 import microwiki.pages.PageTemplate
+import microwiki.pages.Templates
 
 class TemplatesSpecification extends spock.lang.Specification {
     private static PageTemplate TEST_TEMPLATE = { Page p -> "Hello $p" } as PageTemplate

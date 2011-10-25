@@ -2,7 +2,7 @@ package microwiki.servlets
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import microwiki.Templates
+import microwiki.pages.Templates
 import microwiki.pages.PageTemplate
 import microwiki.pages.WritablePageProvider
 

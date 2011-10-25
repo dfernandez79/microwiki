@@ -1,6 +1,5 @@
 package microwiki.cli
 
-import microwiki.cli.Launcher
 import microwiki.Server
 import microwiki.TempDirectory
 
@@ -9,15 +8,46 @@ class LauncherSpecification extends spock.lang.Specification {
         when:
         def server = null
         def output = captureOutputOf {
-            server = new Launcher({uri->}, '--help').startServer()
+            server = new Launcher({uri ->}, '--help').startServer()
         }
 
         then:
         server == null
-        output.startsWith('usage: uwiki [options] <docroot>') // TODO compare with complete usage
+        output == usage()
 
         cleanup:
         server?.stop()
+    }
+
+    private String usage() {
+        '''usage: uwiki [options] <docroot>
+options:
+ -c,--config <configFile>   Uses the specified config file. When not
+                            specified the application will look for
+                            microwiki.md in the document root.
+    --config-example        Outputs a config file example into the console
+                            and exits.
+    --help                  Displays this message and exits.
+'''
+    }
+
+    def "Display a config file example if the --config-example is given"() {
+        when:
+        def server = null
+        def output = captureOutputOf {
+            server = new Launcher({uri ->}, '--config-example').startServer()
+        }
+
+        then:
+        server == null
+        output == Config.EXAMPLE
+
+        cleanup:
+        server?.stop()
+    }
+
+    def "If the config file is invalid generate an error"() {
+        // TODO
     }
 
     private String captureOutputOf(Closure closure) {
@@ -57,10 +87,12 @@ class LauncherSpecification extends spock.lang.Specification {
     def "Launch the browser pointing to the correct port"() {
         setup:
         File tempDir = createTempDirAndFileNamed('README.md')
+        File config = new File(tempDir, Launcher.DEFAULT_CONFIG_FILENAME)
+        config.text = 'server { port = 9898 }'
+
         URI displayed = null
         Server server = new Launcher(
-                { URI uri -> displayed = uri },
-                '--port', '9898', tempDir.absolutePath).startServer()
+                { URI uri -> displayed = uri }, tempDir.absolutePath).startServer()
 
         expect:
         displayed == new URI("http://localhost:9898/README.md")
@@ -72,7 +104,7 @@ class LauncherSpecification extends spock.lang.Specification {
 
     def "If no README.md is found look for an index.md"() {
         setup:
-        File tempDir =  createTempDirAndFileNamed('index.md')
+        File tempDir = createTempDirAndFileNamed('index.md')
 
         URI displayed = null
         Server server = new Launcher(
@@ -91,10 +123,10 @@ class LauncherSpecification extends spock.lang.Specification {
         File tempDir = TempDirectory.create()
         def docRoot = new File(tempDir, 'docs')
         docRoot.mkdir()
-        new File(docRoot, 'README.md').text  = 'Hello'
+        new File(docRoot, 'README.md').text = 'Hello'
         def server = null
         def output = captureOutputOf {
-            server = new Launcher({uri->}, tempDir.absolutePath).startServer()
+            server = new Launcher({uri ->}, tempDir.absolutePath).startServer()
         }
 
         then:
@@ -107,7 +139,7 @@ class LauncherSpecification extends spock.lang.Specification {
 
     def "When the document root is invalid show an error"() {
         when:
-        def server = new Launcher({uri->}, '/invalid/docroot').startServer()
+        def server = new Launcher({uri ->}, '/invalid/docroot').startServer()
 
         then:
         IllegalArgumentException e = thrown()

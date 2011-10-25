@@ -3,16 +3,17 @@ package microwiki.cli
 import java.awt.Desktop
 import java.awt.Desktop.Action
 import javax.servlet.http.HttpServlet
-import microwiki.pages.PageTemplate
-import microwiki.pages.TemplateAdapter
+import microwiki.Server
+import microwiki.pages.Templates
 import microwiki.pages.markdown.MarkdownPageProvider
 import microwiki.servlets.PageServlet
 import microwiki.servlets.ReadonlyPageServlet
-import org.eclipse.jetty.util.resource.Resource
-import microwiki.Server
-import microwiki.Templates
 
 class Launcher {
+    static final LAUNCHER_PROGRAM = 'uwiki'
+    static final VERSION = '1.0.0'
+    static final DEFAULT_CONFIG_FILENAME = 'microwiki.md'
+
     private static final Closure DEFAULT_DISPLAY_PAGE_ON_BROWSER_ACTION = { URI uri ->
         if (Desktop.desktopSupported && Desktop.desktop.isSupported(Action.BROWSE)) {
             Desktop.desktop.browse(uri)
@@ -26,8 +27,8 @@ class Launcher {
 
     static void main(String[] args) {
         try {
-            Server server = new Launcher(DEFAULT_DISPLAY_PAGE_ON_BROWSER_ACTION, args).startServer();
-            server.startAndJoin()
+            Server server = new Launcher(DEFAULT_DISPLAY_PAGE_ON_BROWSER_ACTION, args).startServer()
+            server?.join()
         } catch (IllegalArgumentException e) {
             println "ERROR: $e.message"
         }
@@ -46,33 +47,63 @@ class Launcher {
         } else if (options.help) {
             commandLineParser.usage()
             return null
+        } else if (options.hasOption('config-example')) {
+            print Config.EXAMPLE
+            return null
         }
 
         startServerWith(options)
     }
 
     private startServerWith(OptionAccessor options) {
-        int port = options.getOptionObject('port')?.intValue() ?: Server.DEFAULT_PORT
-        File docRoot = options.arguments().isEmpty() ? resolveDocRoot(currentDirectory()) : resolveDocRoot(options.arguments().get(0))
-        def encoding = options.getOptionValue('encoding') ?: Server.DEFAULT_ENCODING
+        File docRoot = resolveDocRoot(options.arguments().empty ? currentDirectory() : options.arguments()[0])
+        Config config = readConfigurationFile(resolveConfigurationFile(docRoot, options))
 
-        println 'uwiki'
-        println "Port: $port"
+        println "$LAUNCHER_PROGRAM - $VERSION"
         println "Document root: $docRoot"
-        println "Encoding: $encoding"
+        println config
 
-        def server = new Server(
-                Resource.newResource(docRoot),
-                createPageServlet(options.readonly ?: false, docRoot, encoding, createTemplatesFrom(options)),
-                port)
+        def server = new Server(docRoot, createPageServlet(docRoot, config), config.server.port)
         server.start()
 
-        displayPageOnBrowser(docRoot, port)
+        displayPageOnBrowser(docRoot, config.server.port)
 
         server
     }
 
-    String currentDirectory() {
+    File resolveConfigurationFile(File docRoot, OptionAccessor options) {
+        if (options.config) {
+            File configFile = options.getOptionObject('config')
+            if (!configFile.file) {
+                configFile = new File(docRoot, options.getOptionValue('config'))
+            }
+            if (!(configFile.file && configFile.canRead())) {
+                throw new IllegalArgumentException("'$path' is not a readable configuration file")
+
+            }
+        } else {
+            new File(docRoot, DEFAULT_CONFIG_FILENAME)
+        }
+    }
+
+    HttpServlet createPageServlet(File docRoot, Config config) {
+        return createPageServlet(config.server.readOnly,
+                docRoot,
+                config.server.encoding,
+                config.templates)
+    }
+
+    private Config readConfigurationFile(File file) {
+        if (file.file && file.canRead()) {
+            file.withReader {
+                Config.readFrom it
+            }
+        } else {
+            new Config()
+        }
+    }
+
+    private String currentDirectory() {
         new File('.').canonicalPath
     }
 
@@ -97,56 +128,34 @@ class Launcher {
     }
 
     boolean anyWelcomeFileIn(File currentDir) {
-        return WELCOME_FILES.any { existsAndIsFile(currentDir, it) }
+        return WELCOME_FILES.any { new File(currentDir, it).file }
     }
 
     private displayPageOnBrowser(File docRoot, int port) {
-        def found = WELCOME_FILES.find { existsAndIsFile(docRoot, it) }
+        def found = WELCOME_FILES.find { new File(docRoot, it).file }
 
         if (found != null) {
             displayPageOnBrowserAction.call(new URI("http://localhost:$port/$found"))
         }
     }
 
-    boolean existsAndIsFile(File docRoot, String fileName) {
-        def file = new File(docRoot, fileName)
-        return file.exists() && file.isFile()
-    }
 
     private HttpServlet createPageServlet(boolean readonly, File docRoot, String encoding, Templates templates) {
         def provider = new MarkdownPageProvider(docRoot, encoding)
         (readonly) ? new ReadonlyPageServlet(provider, templates) : new PageServlet(provider, templates)
     }
 
-    private Templates createTemplatesFrom(OptionAccessor options) {
-        new Templates(
-                display: template(options.getOptionValue('dt'), 'Display template'),
-                edit: template(options.getOptionValue('et'), 'Edit template'),
-                create: template(options.getOptionValue('ct'), 'Create template'),
-                read: template(options.getOptionValue('rt'), 'Read template'))
-    }
-
     private CliBuilder newCommandLineParser() {
-        def cli = new CliBuilder(usage: 'uwiki [options] <docroot>', header: 'Options:')
+        def cli = new CliBuilder(usage: "$LAUNCHER_PROGRAM [options] <docroot>", header: 'options:')
         cli.with {
-            p(longOpt: 'port', args: 1, argName: 'port', type: Number.class, "The port used to listen for HTTP request (${Server.DEFAULT_PORT} by default)")
-            dt(longOpt: 'display-template', args: 1, argName: 'path', 'Template used to display pages')
-            et(longOpt: 'edit-template', args: 1, argName: 'path', 'Template used to edit pages')
-            ct(longOpt: 'create-template', args: 1, argName: 'path', 'Template used to create pages')
-            rt(longOpt: 'read-template', args: 1, argName: 'path', 'Template used to display pages in the read only mode')
-            r(longOpt: 'readonly', 'Starts the server in read only mode (page edit is not allowed)')
-            e(longOpt: 'encoding', args: 1, argName: 'encoding', "Encoding used to read the wiki files (${Server.DEFAULT_ENCODING} by default)")
-            _(longOpt: 'help', 'Displays this message')
+            c(longOpt: 'config', args: 1, argName: 'configFile', type: File.class,
+                    "Uses the specified config file. When not specified the "
+                            + "application will look for ${DEFAULT_CONFIG_FILENAME} in "
+                            + "the document root.")
+            _(longOpt: 'config-example',
+                    'Outputs a config file example into the console and exits.')
+            _(longOpt: 'help', 'Displays this message and exits.')
         }
         cli
-    }
-
-    private PageTemplate template(String option, String msg) {
-        if (option != null) {
-            println "$msg: $option"
-            return TemplateAdapter.using(new File(option))
-        } else {
-            return null
-        }
     }
 }

@@ -3,7 +3,7 @@ package microwiki.servlets
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import microwiki.Templates
+import microwiki.pages.Templates
 import microwiki.pages.*
 
 abstract class AbstractPageServlet extends HttpServlet {
