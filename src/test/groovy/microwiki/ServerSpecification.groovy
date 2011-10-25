@@ -23,8 +23,8 @@ class ServerSpecification extends spock.lang.Specification {
     }
 
     def cleanupSpec() {
-        server.stop()
-        tempDirectory.deleteDir()
+        server?.stop()
+        tempDirectory?.deleteDir()
     }
 
     @Timeout(3)
@@ -67,26 +67,5 @@ class ServerSpecification extends spock.lang.Specification {
 
         expect:
         contentOf('http://localhost:9999/hello.md') == 'Hello From Servlet'
-    }
-
-    def "Display command line args help if the --help parameter is given"() {
-        when:
-        def output = captureOutputOf { Server.main('--help') }
-
-        then:
-        output == captureOutputOf { Server.showCommandLineHelp() }
-    }
-
-    private String captureOutputOf(Closure closure) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream()
-        PrintStream newOut = new PrintStream(out)
-        PrintStream oldOut = System.out
-        System.setOut(newOut)
-        try {
-            closure.run()
-        } finally {
-            System.setOut(oldOut)
-        }
-        out.toString()
     }
 }

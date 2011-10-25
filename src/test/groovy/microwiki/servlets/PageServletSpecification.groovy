@@ -29,7 +29,7 @@ class PageServletSpecification extends spock.lang.Specification {
     }
 
     def cleanupSpec() {
-        tempDirectory.deleteDir()
+        tempDirectory?.deleteDir()
     }
 
     def setup() {

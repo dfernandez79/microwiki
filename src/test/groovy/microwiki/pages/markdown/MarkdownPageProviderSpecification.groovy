@@ -16,7 +16,7 @@ class MarkdownPageProviderSpecification extends spock.lang.Specification {
     }
 
     def cleanup() {
-        tempDir.deleteDir()
+        tempDir?.deleteDir()
     }
 
     def "pageFor(uri) only accepts URIs relative to the docRoot"() {
