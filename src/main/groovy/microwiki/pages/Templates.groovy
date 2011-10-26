@@ -1,10 +1,7 @@
 package microwiki.pages
 
-import microwiki.pages.PageTemplate
-import microwiki.pages.TemplateAdapter
-
 class Templates {
-    static PageTemplate DEFAULT_DISPLAY_TEMPLATE = template('display.html', [readonly: true])
+    static PageTemplate DEFAULT_DISPLAY_TEMPLATE = template('display.html', [readonly: false])
     static PageTemplate DEFAULT_EDIT_TEMPLATE = template('edit.html')
     static PageTemplate DEFAULT_CREATE_TEMPLATE = DEFAULT_EDIT_TEMPLATE
     static PageTemplate DEFAULT_READ_TEMPLATE = template('display.html', [readonly: true])

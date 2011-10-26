@@ -2,21 +2,13 @@ apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'code-quality'
-apply plugin: com.smokejumperit.gradle.OneJar
+apply plugin: 'application'
 
 javaVersion = '1.6'
 sourceCompatibility = javaVersion
 targetCompatibility = javaVersion
 codeNarcConfigFileName = 'config/codenarc/ruleset.groovy'
-
-buildscript {
-    repositories {
-        mavenRepo urls: 'http://repo.smokejumperit.com'
-    }
-    dependencies {
-        classpath 'com.smokejumperit:gradle-plugins:0.8.2'
-    }
-}
+mainClassName =  'microwiki.cli.Launcher'
 
 repositories {
     mavenCentral()
@@ -33,17 +25,10 @@ dependencies {
     testCompile group: 'org.spockframework', name: 'spock-core', version: '0.6-groovy-1.8-SNAPSHOT'
 }
 
-jar {
-    mainfest {
-        attributes 'Main-Class': 'microwiki.cli.Launcher'
-    }
-}
-
 /*
  Dependencies used by the server functionality.
  It allows the application to work as a web server
  */
-
 def webServerDependencies() {
     [group: 'org.eclipse.jetty', version: '8.0.3.v20111011', name: 'jetty-servlet']
 }
@@ -52,7 +37,6 @@ def webServerDependencies() {
  Dependencies used by the search functionality.
  It allows to do a fast page search
  */
-
 def searchDependencies() {
     [
             [group: 'org.apache.commons', name: 'commons-vfs2', version: '2.0'],
@@ -63,7 +47,6 @@ def searchDependencies() {
 /*
  Dependencies used to parse the Wiki markup.
  */
-
 def wikiParsingDependencies() {
     [group: 'org.pegdown', name: 'pegdown', version: '1.0.2']
 }
@@ -71,7 +54,6 @@ def wikiParsingDependencies() {
 /*
   Dependencies to support the command line interface.
  */
-
 def commandLineInterfaceDependencies() {
     [group: 'commons-cli', name: 'commons-cli', version: '1.2']
 }

@@ -8,7 +8,7 @@ class LauncherSpecification extends spock.lang.Specification {
         when:
         def server = null
         def output = captureOutputOf {
-            server = new Launcher({uri ->}, '--help').startServer()
+            server = new Launcher({ }, '--help').startServer()
         }
 
         then:
@@ -24,7 +24,7 @@ class LauncherSpecification extends spock.lang.Specification {
 options:
  -c,--config <configFile>   Uses the specified config file. When not
                             specified the application will look for
-                            microwiki.md in the document root.
+                            microwiki.conf in the document root.
     --config-example        Outputs a config file example into the console
                             and exits.
     --help                  Displays this message and exits.
@@ -35,7 +35,7 @@ options:
         when:
         def server = null
         def output = captureOutputOf {
-            server = new Launcher({uri ->}, '--config-example').startServer()
+            server = new Launcher({ }, '--config-example').startServer()
         }
 
         then:
@@ -47,7 +47,22 @@ options:
     }
 
     def "If the config file is invalid generate an error"() {
-        // TODO
+        setup:
+        File tempDir = createTempDirAndFileNamed('README.md')
+        File config = new File(tempDir, Launcher.DEFAULT_CONFIG_FILENAME)
+        config.text = 'invalid { port = 9898 }'
+
+        when:
+        def server = new Launcher({ }, tempDir.absolutePath).startServer()
+
+        then:
+        ConfigurationScriptException e = thrown()
+        e.cause.class == MissingMethodException.class
+        e.message == 'The configuration script failed to load, see the error cause for details'
+
+        cleanup:
+        server?.stop()
+        tempDir?.deleteDir()
     }
 
     private String captureOutputOf(Closure closure) {
@@ -67,10 +82,10 @@ options:
         setup:
         File tempDir = createTempDirAndFileNamed('README.md')
         URI displayed = null
-        Server server = new Launcher({ URI uri -> displayed = uri }, tempDir.absolutePath).startServer()
+        Server server = new Launcher({displayed = it }, tempDir.absolutePath).startServer()
 
         expect:
-        displayed == new URI("http://localhost:${Server.DEFAULT_PORT}/README.md")
+        displayed == "http://localhost:${Server.DEFAULT_PORT}/README.md".toURI()
 
         cleanup:
         server?.stop()
@@ -91,11 +106,10 @@ options:
         config.text = 'server { port = 9898 }'
 
         URI displayed = null
-        Server server = new Launcher(
-                { URI uri -> displayed = uri }, tempDir.absolutePath).startServer()
+        Server server = new Launcher({ displayed = it }, tempDir.absolutePath).startServer()
 
         expect:
-        displayed == new URI("http://localhost:9898/README.md")
+        displayed == 'http://localhost:9898/README.md'.toURI()
 
         cleanup:
         server?.stop()
@@ -107,11 +121,10 @@ options:
         File tempDir = createTempDirAndFileNamed('index.md')
 
         URI displayed = null
-        Server server = new Launcher(
-                { URI uri -> displayed = uri }, tempDir.absolutePath).startServer()
+        Server server = new Launcher({ displayed = it }, tempDir.absolutePath).startServer()
 
         expect:
-        displayed == new URI("http://localhost:${Server.DEFAULT_PORT}/index.md")
+        displayed == "http://localhost:${Server.DEFAULT_PORT}/index.md".toURI()
 
         cleanup:
         server?.stop()
@@ -126,7 +139,7 @@ options:
         new File(docRoot, 'README.md').text = 'Hello'
         def server = null
         def output = captureOutputOf {
-            server = new Launcher({uri ->}, tempDir.absolutePath).startServer()
+            server = new Launcher({}, tempDir.absolutePath).startServer()
         }
 
         then:
@@ -139,7 +152,7 @@ options:
 
     def "When the document root is invalid show an error"() {
         when:
-        def server = new Launcher({uri ->}, '/invalid/docroot').startServer()
+        def server = new Launcher({}, '/invalid/docroot').startServer()
 
         then:
         IllegalArgumentException e = thrown()
@@ -158,10 +171,32 @@ options:
     }
 
     def "When the config file is invalid show an error"() {
-        // TODO
+        when:
+        def server = new Launcher({}, '--config', 'invalid').startServer()
+
+        then:
+        IllegalArgumentException e = thrown()
+        e.message.endsWith("invalid' is not a readable configuration file")
+
+        cleanup:
+        server?.stop()
     }
 
-    def "Detect if the configuration file is present in the current directory and use it by default"() {
-        // TODO
+    def "The launcher reports causes for configuration errors"() {
+        setup:
+        File tempDir =  TempDirectory.create()
+        File config = new File(tempDir, Launcher.DEFAULT_CONFIG_FILENAME)
+        config.text = 'invalid { port = 9898 }'
+
+        when:
+        def outputLines = captureOutputOf({ Launcher.main('--config', config.absolutePath)  }).readLines()
+
+        then:
+        outputLines[0] == 'ERROR: The configuration script failed to load, see the error cause for details'
+        outputLines[2] == 'Error details:'
+        outputLines[3].startsWith('groovy.lang.MissingMethodException')
+
+        cleanup:
+        tempDir?.deleteDir()
     }
 }

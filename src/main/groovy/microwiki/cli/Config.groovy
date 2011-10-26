@@ -1,8 +1,8 @@
 package microwiki.cli
 
-import org.codehaus.groovy.control.CompilerConfiguration
-import microwiki.pages.Templates
 import microwiki.Server
+import microwiki.pages.Templates
+import org.codehaus.groovy.control.CompilerConfiguration
 
 class Config {
     static final String EXAMPLE = """// This is a comment
@@ -27,12 +27,16 @@ templates {
     final SearchConfig search
     final Templates templates
 
-    static Config readFrom(Reader reader) {
+    static Config readFrom(Reader reader) throws ConfigurationScriptException {
         def binding = new Binding(builder: new ConfigBuilder())
 
-        new GroovyShell(this.classLoader,
-                binding,
-                useConfigScriptBaseClass()).evaluate(reader)
+        try {
+            new GroovyShell(this.classLoader,
+                    binding,
+                    useConfigScriptBaseClass()).evaluate(reader)
+        } catch (e) {
+            throw new ConfigurationScriptException(e)
+        }
 
         binding.builder.build()
     }
@@ -50,7 +54,7 @@ templates {
     static CompilerConfiguration useConfigScriptBaseClass() {
         def configuration = new CompilerConfiguration()
         configuration.scriptBaseClass = ConfigScript.canonicalName
-        return configuration
+        configuration
     }
 
     @Override

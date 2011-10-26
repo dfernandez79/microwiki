@@ -24,10 +24,9 @@ This is the prioritized backlog of things to do for the 1.0 release:
 
 1. Search functionality
 
-2. Executable package
-  *  [OneJar][2]
+2. *DONE* Executable package
 
-3. Zero configuration startup
+3. *DONE* Zero configuration startup
    * When microwiki is started show the README.md in the current directory
 
    * If no README.md is found look for a docs sub-directory and show the
@@ -94,5 +93,4 @@ order):
    * Links to classes displays the "Open Type" functionality in Eclipse
 
 [1]: http://daringfireball.net/projects/markdown/
-[2]: http://one-jar.sourceforge.net/
 [3]: http://plantuml.sourceforge.net/

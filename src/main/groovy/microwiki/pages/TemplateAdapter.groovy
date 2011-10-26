@@ -5,7 +5,7 @@ import groovy.text.Template
 
 class TemplateAdapter implements PageTemplate {
     static PageTemplate using(source) {
-        using(source, Collections.emptyMap());
+        using(source, Collections.emptyMap())
     }
 
     static PageTemplate using(source, Map context) {
@@ -35,8 +35,6 @@ class TemplateAdapter implements PageTemplate {
 
     @Override
     String toString() {
-        return description + (templateSpecificContext.keySet().empty ? '' : " context: $templateSpecificContext")
+        description + (templateSpecificContext.keySet().empty ? '' : " context: $templateSpecificContext")
     }
-
-
 }

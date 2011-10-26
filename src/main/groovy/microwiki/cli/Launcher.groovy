@@ -4,7 +4,6 @@ import java.awt.Desktop
 import java.awt.Desktop.Action
 import javax.servlet.http.HttpServlet
 import microwiki.Server
-import microwiki.pages.Templates
 import microwiki.pages.markdown.MarkdownPageProvider
 import microwiki.servlets.PageServlet
 import microwiki.servlets.ReadonlyPageServlet
@@ -12,7 +11,7 @@ import microwiki.servlets.ReadonlyPageServlet
 class Launcher {
     static final LAUNCHER_PROGRAM = 'uwiki'
     static final VERSION = '1.0.0'
-    static final DEFAULT_CONFIG_FILENAME = 'microwiki.md'
+    static final DEFAULT_CONFIG_FILENAME = 'microwiki.conf'
 
     private static final Closure DEFAULT_DISPLAY_PAGE_ON_BROWSER_ACTION = { URI uri ->
         if (Desktop.desktopSupported && Desktop.desktop.isSupported(Action.BROWSE)) {
@@ -31,6 +30,10 @@ class Launcher {
             server?.join()
         } catch (IllegalArgumentException e) {
             println "ERROR: $e.message"
+        } catch (ConfigurationScriptException e) {
+            println "ERROR: $e.message"
+            println '\nError details:'
+            e.cause.printStackTrace(System.out)
         }
     }
 
@@ -57,7 +60,7 @@ class Launcher {
 
     private startServerWith(OptionAccessor options) {
         File docRoot = resolveDocRoot(options.arguments().empty ? currentDirectory() : options.arguments()[0])
-        Config config = readConfigurationFile(resolveConfigurationFile(docRoot, options))
+        Config config = readConfiguration(resolveConfigurationFile(docRoot, options))
 
         println "$LAUNCHER_PROGRAM - $VERSION"
         println "Document root: $docRoot"
@@ -78,22 +81,24 @@ class Launcher {
                 configFile = new File(docRoot, options.getOptionValue('config'))
             }
             if (!(configFile.file && configFile.canRead())) {
-                throw new IllegalArgumentException("'$path' is not a readable configuration file")
-
+                throw new IllegalArgumentException("'$configFile' is not a readable configuration file")
             }
+            configFile
         } else {
             new File(docRoot, DEFAULT_CONFIG_FILENAME)
         }
     }
 
     HttpServlet createPageServlet(File docRoot, Config config) {
-        return createPageServlet(config.server.readOnly,
-                docRoot,
-                config.server.encoding,
-                config.templates)
+        def provider = new MarkdownPageProvider(docRoot, config.server.encoding)
+        if (config.server.readOnly) {
+            new ReadonlyPageServlet(provider, config.templates)
+        } else {
+            new PageServlet(provider, config.templates)
+        }
     }
 
-    private Config readConfigurationFile(File file) {
+    private Config readConfiguration(File file) {
         if (file.file && file.canRead()) {
             file.withReader {
                 Config.readFrom it
@@ -128,7 +133,7 @@ class Launcher {
     }
 
     boolean anyWelcomeFileIn(File currentDir) {
-        return WELCOME_FILES.any { new File(currentDir, it).file }
+        WELCOME_FILES.any { new File(currentDir, it).file }
     }
 
     private displayPageOnBrowser(File docRoot, int port) {
@@ -139,19 +144,13 @@ class Launcher {
         }
     }
 
-
-    private HttpServlet createPageServlet(boolean readonly, File docRoot, String encoding, Templates templates) {
-        def provider = new MarkdownPageProvider(docRoot, encoding)
-        (readonly) ? new ReadonlyPageServlet(provider, templates) : new PageServlet(provider, templates)
-    }
-
     private CliBuilder newCommandLineParser() {
         def cli = new CliBuilder(usage: "$LAUNCHER_PROGRAM [options] <docroot>", header: 'options:')
         cli.with {
             c(longOpt: 'config', args: 1, argName: 'configFile', type: File.class,
-                    "Uses the specified config file. When not specified the "
+                    'Uses the specified config file. When not specified the '
                             + "application will look for ${DEFAULT_CONFIG_FILENAME} in "
-                            + "the document root.")
+                            + 'the document root.')
             _(longOpt: 'config-example',
                     'Outputs a config file example into the console and exits.')
             _(longOpt: 'help', 'Displays this message and exits.')
