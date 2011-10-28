@@ -2,6 +2,10 @@ package microwiki.cli
 
 import microwiki.Server
 import microwiki.TempDirectory
+import microwiki.config.Config
+
+import microwiki.config.dsl.ConfigScriptException
+import microwiki.config.dsl.ConfigBuilder
 
 class LauncherSpecification extends spock.lang.Specification {
     def "Display command line args help if the --help parameter is given"() {
@@ -20,7 +24,7 @@ class LauncherSpecification extends spock.lang.Specification {
     }
 
     private String usage() {
-        '''usage: uwiki [options] <docroot>
+        '''usage: microwiki [options] <docroot>
 options:
  -c,--config <configFile>   Uses the specified config file. When not
                             specified the application will look for
@@ -40,7 +44,7 @@ options:
 
         then:
         server == null
-        output == Config.EXAMPLE
+        output == ConfigBuilder.CONFIG_SCRIPT_EXAMPLE
 
         cleanup:
         server?.stop()
@@ -56,7 +60,7 @@ options:
         def server = new Launcher({ }, tempDir.absolutePath).startServer()
 
         then:
-        ConfigurationScriptException e = thrown()
+        ConfigScriptException e = thrown()
         e.cause.class == MissingMethodException.class
         e.message == 'The configuration script failed to load, see the error cause for details'
 
@@ -82,7 +86,7 @@ options:
         setup:
         File tempDir = createTempDirAndFileNamed('README.md')
         URI displayed = null
-        Server server = new Launcher({displayed = it }, tempDir.absolutePath).startServer()
+        Server server = new Launcher({ displayed = it }, tempDir.absolutePath).startServer()
 
         expect:
         displayed == "http://localhost:${Server.DEFAULT_PORT}/README.md".toURI()
@@ -131,25 +135,6 @@ options:
         tempDir?.deleteDir()
     }
 
-    def "If no README.md or index.md in current directory, look for a docs directory"() {
-        when:
-        File tempDir = TempDirectory.create()
-        def docRoot = new File(tempDir, 'docs')
-        docRoot.mkdir()
-        new File(docRoot, 'README.md').text = 'Hello'
-        def server = null
-        def output = captureOutputOf {
-            server = new Launcher({}, tempDir.absolutePath).startServer()
-        }
-
-        then:
-        output.contains("Document root: $docRoot")
-
-        cleanup:
-        server?.stop()
-        tempDir?.deleteDir()
-    }
-
     def "When the document root is invalid show an error"() {
         when:
         def server = new Launcher({}, '/invalid/docroot').startServer()
@@ -189,7 +174,7 @@ options:
         config.text = 'invalid { port = 9898 }'
 
         when:
-        def outputLines = captureOutputOf({ Launcher.main('--config', config.absolutePath)  }).readLines()
+        def outputLines = (captureOutputOf { Launcher.main('--config', config.absolutePath)  }).readLines()
 
         then:
         outputLines[0] == 'ERROR: The configuration script failed to load, see the error cause for details'

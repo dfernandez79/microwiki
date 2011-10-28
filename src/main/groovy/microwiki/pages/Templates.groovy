@@ -1,15 +1,17 @@
 package microwiki.pages
 
 class Templates {
-    static PageTemplate DEFAULT_DISPLAY_TEMPLATE = template('display.html', [readonly: false])
-    static PageTemplate DEFAULT_EDIT_TEMPLATE = template('edit.html')
-    static PageTemplate DEFAULT_CREATE_TEMPLATE = DEFAULT_EDIT_TEMPLATE
-    static PageTemplate DEFAULT_READ_TEMPLATE = template('display.html', [readonly: true])
+    static final PageTemplate DEFAULT_DISPLAY_TEMPLATE = template('display.html', [readonly: false])
+    static final PageTemplate DEFAULT_EDIT_TEMPLATE = template('edit.html')
+    static final PageTemplate DEFAULT_CREATE_TEMPLATE = DEFAULT_EDIT_TEMPLATE
+    static final PageTemplate DEFAULT_READ_TEMPLATE = template('display.html', [readonly: true])
+    static final PageTemplate DEFAULT_SEARCH_TEMPLATE = template('search.html')
 
     public final PageTemplate display
     public final PageTemplate edit
     public final PageTemplate create
     public final PageTemplate read
+    public final PageTemplate search
 
     private static template(String resource, Map templateSpecificContext) {
         TemplateAdapter.using(this.getResource("/microwiki/templates/$resource"), templateSpecificContext)
@@ -28,6 +30,7 @@ class Templates {
         edit = config.edit ?: DEFAULT_EDIT_TEMPLATE
         create = config.create ?: DEFAULT_CREATE_TEMPLATE
         read = config.read ?: DEFAULT_READ_TEMPLATE
+        search = config.search ?: DEFAULT_SEARCH_TEMPLATE
     }
 
     boolean isAnyRedefined() {

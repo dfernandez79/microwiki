@@ -10,7 +10,7 @@ interface PageProvider {
 
     boolean isSearchSupported()
 
-    SearchResults search(String text)
+    SearchResults search(String query)
 
-    SearchResults search(String text, SearchResultsDisplayOptions options)
+    SearchResults search(String query, SearchResultsDisplayOptions options)
 }

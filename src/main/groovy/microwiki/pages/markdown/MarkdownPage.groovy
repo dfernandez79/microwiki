@@ -17,7 +17,7 @@ class MarkdownPage implements Page {
         this.html = deferredWriteOf { htmlFromMarkdown() }
     }
 
-    private Writable deferredWriteOf(Closure cl) {
+    private Writable deferredWriteOf(Closure<String> cl) {
         ({ Writer out ->
             try {
                 out.write cl.call()
@@ -27,7 +27,7 @@ class MarkdownPage implements Page {
         }).asWritable()
     }
 
-    private htmlFromMarkdown() {
+    private String htmlFromMarkdown() {
         new PegDownProcessor().markdownToHtml(source.toString())
     }
 }

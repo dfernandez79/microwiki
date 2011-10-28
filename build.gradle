@@ -9,6 +9,7 @@ sourceCompatibility = javaVersion
 targetCompatibility = javaVersion
 codeNarcConfigFileName = 'config/codenarc/ruleset.groovy'
 mainClassName =  'microwiki.cli.Launcher'
+version = '1.0'
 
 repositories {
     mavenCentral()

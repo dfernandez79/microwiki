@@ -10,30 +10,54 @@ import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
 import org.eclipse.jetty.util.resource.Resource
 
+import microwiki.config.Config
+import microwiki.servlets.PageServlet
+import microwiki.servlets.ReadonlyPageServlet
+import microwiki.pages.markdown.MarkdownPageProvider
+import microwiki.servlets.SearchServlet
+import microwiki.search.lucene.LuceneSearchStrategy
+import microwiki.search.NullPageSearchStrategy
+import microwiki.search.PageSearchStrategy
+import org.apache.commons.vfs2.VFS
+import org.apache.commons.vfs2.impl.DefaultFileMonitor
+
 class Server {
     static final int DEFAULT_PORT = 9999
     static final String DEFAULT_ENCODING = 'UTF-8'
 
+    final File docRoot
+    final Config config
     private final JettyServer server
-    private final HttpServlet pageServlet
-    private final Resource docRootResource
+    private DefaultFileMonitor fileChangeMonitor
 
-    Server(File docRoot, HttpServlet pageServlet, Integer port) {
-        this(Resource.newResource(docRoot), pageServlet, port)
+    Server(File docRoot, Config config) {
+        this.docRoot = docRoot
+        this.config = config
+
+        server = new JettyServer(config.server.port)
+        initializeServerHandlers()
     }
 
-    Server(Resource docRootResource, HttpServlet pageServlet, Integer port) {
-        this.docRootResource = docRootResource
-        this.pageServlet = pageServlet
-        server = new JettyServer(port)
-        initializeServerHandlers(server)
+    HttpServlet createPageServlet(MarkdownPageProvider provider) {
+        if (config.server.readOnly) {
+            new ReadonlyPageServlet(provider, config.templates)
+        } else {
+            new PageServlet(provider, config.templates)
+        }
     }
+    private initializeServerHandlers() {
+        def docRootResource = Resource.newResource(docRoot)
+        def provider = createPageProvider()
 
-    private initializeServerHandlers(org.eclipse.jetty.server.Server server) {
         def servletContextHandler = new ServletContextHandler()
-        servletContextHandler.baseResource = docRootResource
-        servletContextHandler.contextPath = '/'
-        servletContextHandler.addServlet(new ServletHolder(pageServlet), '*.md')
+        servletContextHandler.with {
+            baseResource = docRootResource
+            contextPath = '/'
+            addServlet(new ServletHolder(createPageServlet(provider)), '*.md')
+            if (provider.searchSupported) {
+                addServlet(new ServletHolder(new SearchServlet(provider, config.templates)), '/search')
+            }
+        }
 
         def docRootResourceHandler = new ResourceHandler(
                 directoriesListed: true,
@@ -50,11 +74,26 @@ class Server {
                 new DefaultHandler()])
     }
 
+    MarkdownPageProvider createPageProvider() {
+        PageSearchStrategy strategy
+        if (config.search.enabled) {
+            strategy = new LuceneSearchStrategy(docRoot, ~/.*\.md/)
+            fileChangeMonitor = new DefaultFileMonitor(strategy)
+            fileChangeMonitor.recursive = true
+            fileChangeMonitor.addFile(VFS.manager.toFileObject(docRoot))
+        } else {
+            strategy = NullPageSearchStrategy.INSTANCE
+        }
+        return new MarkdownPageProvider(docRoot, config.server.encoding, strategy)
+    }
+
     void start() {
+        fileChangeMonitor?.start()
         server.start()
     }
 
     void stop() {
+        fileChangeMonitor?.stop()
         server.stop()
     }
 

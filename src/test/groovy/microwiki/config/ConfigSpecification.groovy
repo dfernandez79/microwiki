@@ -1,10 +1,10 @@
-package microwiki.cli
+package microwiki.config
 
 import microwiki.Server
 import microwiki.TempDirectory
 
 import microwiki.pages.Page
-import microwiki.pages.PageDisplayContext
+
 import microwiki.pages.Templates
 
 class ConfigSpecification extends spock.lang.Specification {
@@ -121,9 +121,9 @@ Templates:
         Config.readFrom(new StringReader(contents))
     }
 
-    private PageDisplayContext contextFor(String template) {
+    private Map contextFor(String template) {
         Page page = Mock()
         page.html >> {out -> out.write template}.asWritable()
-        new PageDisplayContext(page, false)
+        [page: page, searchSupported: false]
     }
 }

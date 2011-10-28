@@ -55,7 +55,7 @@ h1, h2 {
     width: auto;
     padding: 38px;
     background-color: white;
-    margin: 0px 38px 25px;
+    margin: 0 38px 25px;
     border-radius: 5px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
@@ -86,12 +86,12 @@ hr {
     border: 1px solid gray;
     padding-left: 5px;
     padding-right: 5px;
-    padding-top: 0px;
+    padding-top: 0;
     text-decoration: none;
     color: gray;
 }
 
-#commands a:hover {
+#commands a:hover, #save button:hover {
     border: 1px solid black;
     background-color: black;
     color: white;
@@ -114,11 +114,27 @@ hr {
     top: 45px;
 }
 
-#save a {
+#save button {
+    font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
     font-size: 15px;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding: 0 20px;
+    font-variant: small-caps;
+    font-weight: bold;
+    border-radius: 4px;
+    text-transform: uppercase;
+    border: 1px solid gray;
+    color: gray;
+    background-color: transparent;
+    cursor: pointer;
+    margin: 0;
 }
+
+#toggleQuickRef {
+    position: absolute;
+    top: 40px;
+    left: 140px;
+}
+
 
 #discard a:hover {
     background-color: #801b1b;
@@ -155,7 +171,7 @@ hr {
 #quickRef pre {
     line-height: 1.5em;
     background: transparent;
-    border: 0px none;
+    border: 0 none;
 }
 
 #quickRef h1 {

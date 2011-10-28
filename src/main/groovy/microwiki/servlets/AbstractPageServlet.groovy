@@ -11,7 +11,7 @@ abstract class AbstractPageServlet extends HttpServlet {
     protected final PageProvider pageProvider
     protected final Templates templates
 
-    AbstractPageServlet(PageProvider pageProvider, Templates templates) {
+    protected AbstractPageServlet(PageProvider pageProvider, Templates templates) {
         this.pageProvider = pageProvider
         this.templates = templates
     }
@@ -32,12 +32,11 @@ abstract class AbstractPageServlet extends HttpServlet {
     protected render(Page page, PageTemplate template, HttpServletResponse resp) {
         resp.contentType = 'text/html'
         resp.characterEncoding = page.encoding
-        template.applyWith(displayContextFor(page)).writeTo(resp.writer)
+        template.applyWith(
+                page: page,
+                searchSupported: pageProvider.searchSupported).writeTo(resp.writer)
     }
 
-    protected PageDisplayContext displayContextFor(Page page) {
-        new PageDisplayContext(page, pageProvider.searchSupported)
-    }
 
     private Page pageFor(URI pageURI) {
         pageProvider.pageFor(pageURI)

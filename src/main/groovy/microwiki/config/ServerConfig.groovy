@@ -1,4 +1,4 @@
-package microwiki.cli
+package microwiki.config
 
 import groovy.transform.Immutable
 import microwiki.Server

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search results</title>
+    <link href="/fonts.css" rel="stylesheet" type="text/css"/>
+    <link href="/style.css" rel="stylesheet" type="text/css"/>
+</head>
+<body class="search">
+<div id="search">
+        <form action="/search"><input placeholder="Search" name="q" type="search"/></form>
+</div>
+<div id="results">
+    <ul>
+    <% results?.retrievedResults.each { %><li><a href="${it.uri}">${it.uri}</a></li><% } %>
+    </ul>
+</div>
+</body>
+</html>

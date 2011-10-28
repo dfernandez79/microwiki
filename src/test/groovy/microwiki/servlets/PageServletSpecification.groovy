@@ -1,20 +1,17 @@
 package microwiki.servlets
 
 import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 import microwiki.TempDirectory
-import microwiki.pages.Templates
 import microwiki.pages.Page
-import microwiki.pages.PageDisplayContext
+import microwiki.pages.Templates
 import microwiki.pages.WritablePageProvider
 import microwiki.pages.markdown.MarkdownPageProvider
 
-class PageServletSpecification extends spock.lang.Specification {
+class PageServletSpecification extends ServletSpecification {
     private static final URI NOT_FOUND_URI = new URI('notfound.md')
     private Page helloPage
     private WritablePageProvider pageProvider
-    private HttpServletResponse response
-    private StringWriter responseOutput
+
     private Templates templates
     private PageServlet servlet
     private static File tempDirectory
@@ -32,28 +29,12 @@ class PageServletSpecification extends spock.lang.Specification {
         tempDirectory?.deleteDir()
     }
 
+    @Override
     def setup() {
         pageProvider = new MarkdownPageProvider(tempDirectory, 'UTF-8')
         helloPage = pageProvider.pageFor('hello.md')
-
-        response = Mock()
-        response.contentType = 'text/html'
-        response.characterEncoding = 'UTF-8'
-        responseOutput = new StringWriter()
-        response.writer >> { new PrintWriter(responseOutput) }
-        response.reset() >> { responseOutput.buffer.length = 0 }
-
         templates = new Templates()
         servlet = new PageServlet(pageProvider, templates)
-    }
-
-    private HttpServletRequest requestFor(String path, Map<String, String> parameters = null) {
-        HttpServletRequest req = Mock()
-        req.servletPath >> path
-        if (parameters != null) {
-            req.getParameter(_ as String) >> { parameters.get(it.get(0)) }
-        }
-        req
     }
 
     def "When method is GET display the page"() {
@@ -67,8 +48,8 @@ class PageServletSpecification extends spock.lang.Specification {
         responseOutput.toString() == templates.display.applyWith(context(helloPage)).toString()
     }
 
-    PageDisplayContext context(Page page) {
-        new PageDisplayContext(page, false)
+    Map context(Page page) {
+        [page: page, searchSupported: false]
     }
 
     def "When method is GET and the ?edit parameter is specified, display the edit page"() {

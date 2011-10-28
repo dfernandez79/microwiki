@@ -51,12 +51,12 @@ class MarkdownPageProvider implements WritablePageProvider {
     }
 
     @Override
-    SearchResults search(String text) {
-        search(text, SearchResultsDisplayOptions.defaultOptions())
+    SearchResults search(String query) {
+        search(query, SearchResultsDisplayOptions.defaultOptions())
     }
 
     @Override
-    SearchResults search(String text, SearchResultsDisplayOptions options) {
-        pageSearchStrategy.search(text, options)
+    SearchResults search(String query, SearchResultsDisplayOptions options) {
+        pageSearchStrategy.search(query, options)
     }
 }

@@ -1,4 +1,4 @@
-package microwiki.cli
+package microwiki.config.dsl
 
 abstract class ConfigScript extends Script {
     void server(Closure closure) {

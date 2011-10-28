@@ -74,9 +74,9 @@ class LuceneSearchStrategy implements PageSearchStrategy, FileListener {
     }
 
     @Override
-    SearchResults search(String text, SearchResultsDisplayOptions options) {
+    SearchResults search(String query, SearchResultsDisplayOptions options) {
         luceneFactory.withReadOnlySearcherOn(searchIndexDirectory) { IndexSearcher searcher ->
-            createSearchResults(searcher, luceneFactory.newParserFor('contents').parse(text), options)
+            createSearchResults(searcher, luceneFactory.newParserFor('contents').parse(query), options)
         }
     }
 
