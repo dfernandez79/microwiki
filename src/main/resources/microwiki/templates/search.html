@@ -6,13 +6,18 @@
     <link href="/style.css" rel="stylesheet" type="text/css"/>
 </head>
 <body class="search">
-<div id="search">
+<div id="commands">
+    <div id="search">
         <form action="/search"><input placeholder="Search" name="q" type="search"/></form>
+    </div>
 </div>
-<div id="results">
-    <ul>
-    <% results?.retrievedResults.each { %><li><a href="${it.uri}">${it.uri}</a></li><% } %>
-    </ul>
+<div id="content">
+    <h1>Search results for ${results?.searchQuery}</h1>
+    <div id="results">
+        <ul>
+        <% results?.retrievedResults.each { %><li><a href="${it.uri}">${it.uri}</a><p>${it.highlights}</p></li><% } %>
+        </ul>
+    </div>
 </div>
 </body>
 </html>

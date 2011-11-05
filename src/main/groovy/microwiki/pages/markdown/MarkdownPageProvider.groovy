@@ -5,7 +5,10 @@ import java.util.regex.Pattern
 import microwiki.pages.Page
 import microwiki.pages.PageChangeListener
 import microwiki.pages.WritablePageProvider
-import microwiki.search.*
+import microwiki.search.NullPageSearchStrategy
+import microwiki.search.PageSearchStrategy
+import microwiki.search.SearchResults
+import microwiki.search.SearchResultsDisplayOptions
 
 class MarkdownPageProvider implements WritablePageProvider, PageChangeListener {
     private static final Pattern FILE_PATTERN = ~/.*\.md/
@@ -16,14 +19,14 @@ class MarkdownPageProvider implements WritablePageProvider, PageChangeListener {
     final File docRoot
 
     MarkdownPageProvider(File docRoot, String encoding) {
-        this(docRoot, encoding, { NullPageSearchStrategy.INSTANCE } as PageSearchStrategyFactory)
+        this(docRoot, encoding, NullPageSearchStrategy.INSTANCE)
     }
 
-    MarkdownPageProvider(File docRoot, String encoding, PageSearchStrategyFactory searchStrategyFactory) {
+    MarkdownPageProvider(File docRoot, String encoding, PageSearchStrategy pageSearchStrategy) {
         this.docRoot = docRoot
         this.docRootURI = docRoot.toURI()
         this.encoding = encoding
-        this.pageSearchStrategy = searchStrategyFactory.createFor(this)
+        this.pageSearchStrategy = pageSearchStrategy
     }
 
     @Override

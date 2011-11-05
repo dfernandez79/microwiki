@@ -7,7 +7,7 @@ enum NullPageSearchStrategy implements PageSearchStrategy {
 
     @Override
     SearchResults search(String query, SearchResultsDisplayOptions options) {
-        new SearchResults(options, 0, Collections.<SearchResult> emptyList())
+        new SearchResults(query, options, 0, Collections.<SearchResult> emptyList())
     }
 
     @Override

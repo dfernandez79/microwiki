@@ -27,7 +27,8 @@ class LuceneSearchStrategySpecification extends spock.lang.Specification {
 This is a test page'''
 
         provider = new MarkdownPageProvider(tempDirectory, 'UTF-8')
-        strategy = new LuceneSearchStrategy(provider)
+        strategy = new LuceneSearchStrategy()
+        strategy.createSearchIndexWithPagesFrom(provider)
     }
 
     def cleanup() {
@@ -87,5 +88,13 @@ This is a test page'''
 -----------
 
 This is a <B>test</B> page''']
+    }
+
+    def "The results reports the query used to obtain them"() {
+        when:
+        def results = strategy.search('test', SearchResultsDisplayOptions.defaultOptions())
+
+        then:
+        results.searchQuery == 'test'
     }
 }

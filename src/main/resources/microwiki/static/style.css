@@ -15,10 +15,14 @@ ul, ol {
 pre, code {
     font-family: 'Droid Sans Mono', monospace, sans-serif;
     font-size: 95%;
+    background-color: #f1f1f1;
 }
 
-pre {
-    background-color: #f1f1f1;
+code {
+    border:  1px solid #f1f1f1;
+    padding-left: 2px;
+    padding-right: 2px;
+    border-radius: 5px;
 }
 
 blockquote, pre {
@@ -57,7 +61,7 @@ h1, h2 {
     background-color: white;
     margin: 0 38px 25px;
     border-radius: 5px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
 #content a {
@@ -151,7 +155,7 @@ hr {
     font-size: 10pt;
     width: 100%;
     height: 500px;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     border: 1px solid lightgray;
     outline: none;
     border-radius: 5px;

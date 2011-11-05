@@ -70,7 +70,7 @@ class Launcher {
         Config config = readConfiguration(resolveConfigurationFile(docRoot, options))
 
         println "$LAUNCHER_PROGRAM - $VERSION"
-        println "Document root: ${docRoot.absolutePath}"
+        println "Document root: ${docRoot.absoluteFile.canonicalPath}"
         println config
 
         def server = new Server(docRoot, config)

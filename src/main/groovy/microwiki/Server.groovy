@@ -6,8 +6,6 @@ import javax.servlet.http.HttpServlet
 import microwiki.config.Config
 import microwiki.pages.PageProvider
 import microwiki.pages.markdown.MarkdownPageProvider
-import microwiki.search.NullPageSearchStrategy
-import microwiki.search.PageSearchStrategy
 import microwiki.search.lucene.LuceneSearchStrategy
 import microwiki.servlets.PageServlet
 import microwiki.servlets.ReadonlyPageServlet
@@ -19,7 +17,6 @@ import org.eclipse.jetty.server.handler.ResourceHandler
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
 import org.eclipse.jetty.util.resource.Resource
-import microwiki.search.PageSearchStrategyFactory
 
 class Server {
     static final int DEFAULT_PORT = 9999
@@ -83,17 +80,19 @@ class Server {
                 new DefaultHandler()])
     }
 
-    private MarkdownPageProvider createPageProvider() {
-        searchStrategyFactory()
-        return new MarkdownPageProvider(docRoot, config.server.encoding, searchStrategyFactory())
+    private PageProvider createPageProvider() {
+        if (config.search.enabled) {
+            createPageProviderWithPageSearch()
+        } else {
+            new MarkdownPageProvider(docRoot, config.server.encoding)
+        }
     }
 
-    private PageSearchStrategyFactory searchStrategyFactory() {
-        if (config.search.enabled) {
-            return { new LuceneSearchStrategy(it) } as PageSearchStrategyFactory
-        } else {
-            return { NullPageSearchStrategy.INSTANCE } as PageSearchStrategyFactory
-        }
+    private PageProvider createPageProviderWithPageSearch() {
+        LuceneSearchStrategy luceneSearchStrategy = new LuceneSearchStrategy()
+        PageProvider newProvider = new MarkdownPageProvider(docRoot, config.server.encoding, luceneSearchStrategy)
+        luceneSearchStrategy.createSearchIndexWithPagesFrom(newProvider)
+        newProvider
     }
 
     void start() {

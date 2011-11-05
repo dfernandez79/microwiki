@@ -4,14 +4,11 @@ import microwiki.TempDirectory
 import microwiki.search.PageSearchStrategy
 import microwiki.search.SearchResult
 import microwiki.search.SearchResults
-import microwiki.pages.PageChangeListener
-import microwiki.pages.Page
-import microwiki.search.PageSearchStrategyFactory
 
 class MarkdownPageProviderSpecification extends spock.lang.Specification {
     MarkdownPageProvider provider
     File tempDir
-    private static final MOCK_SEARCH_RESULTS = new SearchResults(null, 0, Collections.<SearchResult> emptyList())
+    private static final MOCK_SEARCH_RESULTS = new SearchResults('', null, 0, Collections.<SearchResult> emptyList())
 
     def setup() {
         tempDir = TempDirectory.create()
@@ -42,7 +39,7 @@ class MarkdownPageProviderSpecification extends spock.lang.Specification {
         PageSearchStrategy mockSearchStrategy = Mock()
         mockSearchStrategy.searchSupported >> true
         mockSearchStrategy.search(_, _) >> MOCK_SEARCH_RESULTS
-        def providerWithSearch = new MarkdownPageProvider(tempDir, 'UTF-8', { mockSearchStrategy } as PageSearchStrategyFactory)
+        def providerWithSearch = new MarkdownPageProvider(tempDir, 'UTF-8', mockSearchStrategy)
 
         expect:
         providerWithSearch.searchSupported

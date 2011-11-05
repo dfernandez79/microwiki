@@ -25,40 +25,38 @@ import org.apache.lucene.util.Version
 import org.apache.lucene.search.highlight.*
 
 class LuceneSearchStrategy implements PageSearchStrategy {
-    private final PageProvider provider
     private final Directory searchIndexDirectory
     private final LuceneFactory luceneFactory
 
     final boolean searchSupported = true
 
-    LuceneSearchStrategy(PageProvider provider) {
-        this(provider, new RAMDirectory())
+    LuceneSearchStrategy() {
+        this(new RAMDirectory())
     }
 
-    LuceneSearchStrategy(PageProvider provider, Directory searchIndexDirectory) {
-        this(provider, searchIndexDirectory, new LuceneFactory(Version.LUCENE_34))
+    LuceneSearchStrategy(Directory searchIndexDirectory) {
+        this(searchIndexDirectory, new LuceneFactory(Version.LUCENE_34))
     }
 
-    LuceneSearchStrategy(PageProvider provider, Directory searchIndexDirectory, LuceneFactory luceneFactory) {
-        this.provider = provider
+    LuceneSearchStrategy(Directory searchIndexDirectory, LuceneFactory luceneFactory) {
         this.searchIndexDirectory = searchIndexDirectory
         this.luceneFactory = luceneFactory
-
-        createSearchIndex()
     }
 
     @Override
     SearchResults search(String query, SearchResultsDisplayOptions options) {
         luceneFactory.withReadOnlySearcherOn(searchIndexDirectory) { IndexSearcher searcher ->
-            createSearchResults(searcher, luceneFactory.newParserFor('contents').parse(query), options)
+            createSearchResults(searcher, query, options)
         }
     }
 
-    SearchResults createSearchResults(IndexSearcher searcher, Query query, SearchResultsDisplayOptions options) {
+    SearchResults createSearchResults(IndexSearcher searcher, String searchQuery, SearchResultsDisplayOptions options) {
+        Query query = luceneFactory.newParserFor('contents').parse(searchQuery)
         TopDocs topDocs = searcher.search(query, options.maxNumberOfResultsToRetrieve)
         Highlighter highlighter = contentHighlighterFor(query)
 
         new SearchResults(
+                searchQuery,
                 options,
                 topDocs.totalHits,
                 topDocs.scoreDocs.collect { ScoreDoc sc -> createSearchResult(searcher, sc, highlighter) })
@@ -85,12 +83,6 @@ class LuceneSearchStrategy implements PageSearchStrategy {
 
     private SearchResult createResult(Document document, List<String> highlights) {
         new SearchResult(new URI(document.get('uri')), highlights)
-    }
-
-    private void createSearchIndex() {
-        luceneFactory.withIndexWriterForCreationOn(searchIndexDirectory) { IndexWriter idxWriter ->
-            provider.eachPage { page -> idxWriter.addDocument(luceneDocumentFor(page)) }
-        }
     }
 
     private Document luceneDocumentFor(Page page) {
@@ -135,6 +127,12 @@ class LuceneSearchStrategy implements PageSearchStrategy {
     void removalOfPageIdentifiedBy(URI uri) {
         luceneFactory.withIndexWriterForAppendOn(searchIndexDirectory) { IndexWriter idxWriter ->
             idxWriter.deleteDocuments(new Term('uri', uri.toString()))
+        }
+    }
+
+    def createSearchIndexWithPagesFrom(PageProvider provider) {
+        luceneFactory.withIndexWriterForCreationOn(searchIndexDirectory) { IndexWriter idxWriter ->
+            provider.eachPage { page -> idxWriter.addDocument(luceneDocumentFor(page)) }
         }
     }
 }
