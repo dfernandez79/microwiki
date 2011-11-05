@@ -1,43 +1,34 @@
 package microwiki.pages.markdown
 
+import groovy.io.FileType
+import java.util.regex.Pattern
 import microwiki.pages.Page
+import microwiki.pages.PageChangeListener
 import microwiki.pages.WritablePageProvider
-import microwiki.search.NullPageSearchStrategy
-import microwiki.search.PageSearchStrategy
-import microwiki.search.SearchResults
-import microwiki.search.SearchResultsDisplayOptions
+import microwiki.search.*
 
-class MarkdownPageProvider implements WritablePageProvider {
-    private final String encoding
-    private final URI docRoot
+class MarkdownPageProvider implements WritablePageProvider, PageChangeListener {
+    private static final Pattern FILE_PATTERN = ~/.*\.md/
+    private final URI docRootURI
     private final PageSearchStrategy pageSearchStrategy
 
+    final String encoding
+    final File docRoot
+
     MarkdownPageProvider(File docRoot, String encoding) {
-        this(docRoot, encoding, NullPageSearchStrategy.INSTANCE)
+        this(docRoot, encoding, { NullPageSearchStrategy.INSTANCE } as PageSearchStrategyFactory)
     }
 
-    MarkdownPageProvider(File docRoot, String encoding, PageSearchStrategy searchStrategy) {
-        this.docRoot = docRoot.toURI()
+    MarkdownPageProvider(File docRoot, String encoding, PageSearchStrategyFactory searchStrategyFactory) {
+        this.docRoot = docRoot
+        this.docRootURI = docRoot.toURI()
         this.encoding = encoding
-        this.pageSearchStrategy = searchStrategy
-    }
-
-    @Override
-    Page pageFor(URI uri) {
-        if (uri.isAbsolute() && docRoot.relativize(uri).isAbsolute()) {
-            throw new IllegalArgumentException("Only URIs relative $docRoot are allowed")
-        }
-        new MarkdownPage(docRoot.relativize(uri), docRoot.resolve(uri).toURL(), encoding)
-    }
-
-    @Override
-    Page newPageSampleFor(URI uri) {
-        new MarkdownPage(docRoot.relativize(uri), getClass().getResource('/microwiki/templates/newpage.md'), 'UTF-8')
+        this.pageSearchStrategy = searchStrategyFactory.createFor(this)
     }
 
     @Override
     <T> T writePage(URI uri, Closure<T> closure) {
-        new File(docRoot.resolve(uri)).withWriter closure
+        new File(docRootURI.resolve(uri)).withWriter closure
     }
 
     @Override
@@ -58,5 +49,54 @@ class MarkdownPageProvider implements WritablePageProvider {
     @Override
     SearchResults search(String query, SearchResultsDisplayOptions options) {
         pageSearchStrategy.search(query, options)
+    }
+
+    @Override
+    Page pageFor(URI uri) {
+        assertRelativeToDocroot(uri)
+        createPage(relativize(uri))
+    }
+
+    @Override
+    void eachPage(Closure closure) {
+        docRoot.eachFileMatch(FileType.FILES, FILE_PATTERN) { File file ->
+            closure.call pageFor(relativize(file.toURI()))
+        }
+    }
+
+
+    private void assertRelativeToDocroot(URI uri) {
+        if (uri.isAbsolute() && docRootURI.relativize(uri).isAbsolute()) {
+            throw new IllegalArgumentException("Only URIs relative to $docRootURI are allowed")
+        }
+    }
+
+    private URI relativize(URI uri) {
+        return docRootURI.relativize(uri)
+    }
+
+
+    @Override
+    void creationOfPageIdentifiedBy(URI uri) {
+        pageSearchStrategy.creationOf(pageFor(uri))
+    }
+
+    @Override
+    void updateOfPageIdentifiedBy(URI uri) {
+        pageSearchStrategy.updateOf(pageFor(uri))
+    }
+
+    @Override
+    void removalOfPageIdentifiedBy(URI uri) {
+        pageSearchStrategy.removalOfPageIdentifiedBy(uri)
+    }
+
+    private Page createPage(URI relativeURI) {
+        new MarkdownPage(relativeURI, docRootURI.resolve(relativeURI).toURL(), encoding)
+    }
+
+    @Override
+    Page newPageSampleFor(URI uri) {
+        new MarkdownPage(relativize(uri), getClass().getResource('/microwiki/templates/newpage.md'), 'UTF-8')
     }
 }

@@ -3,8 +3,9 @@ package microwiki.servlets
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import microwiki.pages.Templates
+import microwiki.servlets.view.Templates
 import microwiki.pages.*
+import microwiki.servlets.view.ViewTemplate
 
 abstract class AbstractPageServlet extends HttpServlet {
     private static final int RESPONSE_BUFFER_SIZE = 64 * 1024
@@ -29,7 +30,7 @@ abstract class AbstractPageServlet extends HttpServlet {
         }
     }
 
-    protected render(Page page, PageTemplate template, HttpServletResponse resp) {
+    protected render(Page page, ViewTemplate template, HttpServletResponse resp) {
         resp.contentType = 'text/html'
         resp.characterEncoding = page.encoding
         template.applyWith(
@@ -44,7 +45,7 @@ abstract class AbstractPageServlet extends HttpServlet {
 
     protected abstract void pageSourceNotFound(URI pageURI, HttpServletResponse resp)
 
-    protected abstract PageTemplate templateFor(HttpServletRequest req)
+    protected abstract ViewTemplate templateFor(HttpServletRequest req)
 
     protected URI pagePathFrom(HttpServletRequest req) {
         new URI(req.servletPath.substring(1))

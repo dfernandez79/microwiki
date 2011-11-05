@@ -3,12 +3,24 @@ package microwiki.pages.markdown
 import microwiki.pages.Page
 import microwiki.pages.PageSourceNotFoundException
 import org.pegdown.PegDownProcessor
+import org.pegdown.ToHtmlSerializer
+import org.pegdown.ast.HeaderNode
+import org.pegdown.ast.Node
+import org.pegdown.ast.RootNode
+import org.pegdown.ast.TextNode
 
 class MarkdownPage implements Page {
     final URI uri
     final String encoding
     final Writable source
     final Writable html
+
+    @Lazy(soft = true) RootNode document = { new PegDownProcessor().parseMarkdown(source.toString().toCharArray()) }()
+    @Lazy String title = {
+        Node firstHeaderNode = document.children.find { it instanceof HeaderNode }
+        TextNode headerText = (TextNode) firstHeaderNode?.children?.find { it instanceof TextNode }
+        headerText?.text
+    }()
 
     MarkdownPage(URI uri, sourceData, String encoding) {
         this.uri = uri
@@ -28,6 +40,6 @@ class MarkdownPage implements Page {
     }
 
     private String htmlFromMarkdown() {
-        new PegDownProcessor().markdownToHtml(source.toString())
+        new ToHtmlSerializer().toHtml(document);
     }
 }

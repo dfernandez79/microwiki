@@ -1,11 +1,10 @@
 package microwiki.servlets
 
 import microwiki.pages.PageProvider
-import com.sun.deploy.net.HttpResponse
-import javax.servlet.http.HttpServlet
+
 import javax.servlet.http.HttpServletResponse
-import microwiki.pages.Templates
-import microwiki.pages.TemplateAdapter
+import microwiki.servlets.view.Templates
+import microwiki.servlets.view.TemplateAdapter
 import javax.servlet.http.HttpServletRequest
 
 class SearchServletSpecification extends ServletSpecification {

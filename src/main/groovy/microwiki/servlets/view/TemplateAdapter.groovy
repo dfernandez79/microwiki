@@ -1,14 +1,14 @@
-package microwiki.pages
+package microwiki.servlets.view
 
 import groovy.text.GStringTemplateEngine
 import groovy.text.Template
 
-class TemplateAdapter implements PageTemplate {
-    static PageTemplate using(source) {
+class TemplateAdapter implements ViewTemplate {
+    static ViewTemplate using(source) {
         using(source, Collections.emptyMap())
     }
 
-    static PageTemplate using(source, Map context) {
+    static ViewTemplate using(source, Map context) {
         String desc = 'Template created from reader'
         if ([File.class, URL.class].any { source?.class == it }) {
             desc = source.toString()

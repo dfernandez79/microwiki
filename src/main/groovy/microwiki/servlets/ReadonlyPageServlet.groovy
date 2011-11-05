@@ -2,9 +2,9 @@ package microwiki.servlets
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import microwiki.pages.Templates
+import microwiki.servlets.view.Templates
 import microwiki.pages.PageProvider
-import microwiki.pages.PageTemplate
+import microwiki.servlets.view.ViewTemplate
 
 class ReadonlyPageServlet extends AbstractPageServlet {
     ReadonlyPageServlet(PageProvider pageProvider, Templates templates) {
@@ -17,7 +17,7 @@ class ReadonlyPageServlet extends AbstractPageServlet {
     }
 
     @Override
-    protected PageTemplate templateFor(HttpServletRequest req) {
+    protected ViewTemplate templateFor(HttpServletRequest req) {
         templates.read
     }
 }

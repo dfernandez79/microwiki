@@ -5,7 +5,7 @@ import microwiki.TempDirectory
 
 import microwiki.pages.Page
 
-import microwiki.pages.Templates
+import microwiki.servlets.view.Templates
 
 class ConfigSpecification extends spock.lang.Specification {
     def "Server port can be configured with the server section"() {
@@ -38,6 +38,14 @@ class ConfigSpecification extends spock.lang.Specification {
 
         then:
         config.server.encoding == 'UTF-8'
+    }
+
+    def "By default monitoring of file changes is enabled"() {
+        when:
+        def config = configWith('')
+
+        then:
+        config.server.monitorFileChanges
     }
 
     def "Templates can be configured with the templates section"() {

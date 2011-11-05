@@ -13,4 +13,6 @@ interface PageProvider {
     SearchResults search(String query)
 
     SearchResults search(String query, SearchResultsDisplayOptions options)
+
+    void eachPage(Closure closure)
 }

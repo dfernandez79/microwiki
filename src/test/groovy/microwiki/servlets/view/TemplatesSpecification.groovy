@@ -1,11 +1,12 @@
-package microwiki
+package microwiki.servlets.view
 
 import microwiki.pages.Page
-import microwiki.pages.PageTemplate
-import microwiki.pages.Templates
+
+import microwiki.servlets.view.Templates
+import microwiki.servlets.view.ViewTemplate
 
 class TemplatesSpecification extends spock.lang.Specification {
-    private static final PageTemplate TEST_TEMPLATE = { Page p -> "Hello $p" } as PageTemplate
+    private static final ViewTemplate TEST_TEMPLATE = { Page p -> "Hello $p" } as ViewTemplate
 
     def "If a template is not configured the default is used"() {
         expect:

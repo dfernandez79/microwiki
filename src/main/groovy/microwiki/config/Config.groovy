@@ -1,9 +1,8 @@
 package microwiki.config
 
-import microwiki.Server
 import microwiki.config.dsl.ConfigBuilder
 import microwiki.config.dsl.ConfigScriptException
-import microwiki.pages.Templates
+import microwiki.servlets.view.Templates
 
 class Config {
     final ServerConfig server

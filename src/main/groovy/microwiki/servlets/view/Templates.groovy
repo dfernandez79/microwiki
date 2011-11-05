@@ -1,17 +1,17 @@
-package microwiki.pages
+package microwiki.servlets.view
 
 class Templates {
-    static final PageTemplate DEFAULT_DISPLAY_TEMPLATE = template('display.html', [readonly: false])
-    static final PageTemplate DEFAULT_EDIT_TEMPLATE = template('edit.html')
-    static final PageTemplate DEFAULT_CREATE_TEMPLATE = DEFAULT_EDIT_TEMPLATE
-    static final PageTemplate DEFAULT_READ_TEMPLATE = template('display.html', [readonly: true])
-    static final PageTemplate DEFAULT_SEARCH_TEMPLATE = template('search.html')
+    static final ViewTemplate DEFAULT_DISPLAY_TEMPLATE = template('display.html', [readonly: false])
+    static final ViewTemplate DEFAULT_EDIT_TEMPLATE = template('edit.html')
+    static final ViewTemplate DEFAULT_CREATE_TEMPLATE = DEFAULT_EDIT_TEMPLATE
+    static final ViewTemplate DEFAULT_READ_TEMPLATE = template('display.html', [readonly: true])
+    static final ViewTemplate DEFAULT_SEARCH_TEMPLATE = template('search.html')
 
-    public final PageTemplate display
-    public final PageTemplate edit
-    public final PageTemplate create
-    public final PageTemplate read
-    public final PageTemplate search
+    public final ViewTemplate display
+    public final ViewTemplate edit
+    public final ViewTemplate create
+    public final ViewTemplate read
+    public final ViewTemplate search
 
     private static template(String resource, Map templateSpecificContext) {
         TemplateAdapter.using(this.getResource("/microwiki/templates/$resource"), templateSpecificContext)
@@ -25,7 +25,7 @@ class Templates {
         this([:])
     }
 
-    Templates(Map<String, PageTemplate> config) {
+    Templates(Map<String, ViewTemplate> config) {
         display = config.display ?: DEFAULT_DISPLAY_TEMPLATE
         edit = config.edit ?: DEFAULT_EDIT_TEMPLATE
         create = config.create ?: DEFAULT_CREATE_TEMPLATE

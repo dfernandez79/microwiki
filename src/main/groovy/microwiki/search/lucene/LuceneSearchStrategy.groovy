@@ -1,20 +1,20 @@
 package microwiki.search.lucene
 
-import groovy.io.FileType
-import java.util.regex.Pattern
+import microwiki.pages.Page
+import microwiki.pages.PageProvider
 import microwiki.search.PageSearchStrategy
 import microwiki.search.SearchResult
 import microwiki.search.SearchResults
 import microwiki.search.SearchResultsDisplayOptions
-import org.apache.commons.vfs2.FileChangeEvent
-import org.apache.commons.vfs2.FileListener
 import org.apache.lucene.document.Document
 import org.apache.lucene.document.Field
 import org.apache.lucene.document.Field.Index
 import org.apache.lucene.document.Field.Store
+import org.apache.lucene.document.Field.TermVector
 import org.apache.lucene.index.FieldInfo.IndexOptions
 import org.apache.lucene.index.IndexWriter
 import org.apache.lucene.index.Term
+import org.apache.lucene.index.TermPositionVector
 import org.apache.lucene.search.IndexSearcher
 import org.apache.lucene.search.Query
 import org.apache.lucene.search.ScoreDoc
@@ -22,55 +22,29 @@ import org.apache.lucene.search.TopDocs
 import org.apache.lucene.store.Directory
 import org.apache.lucene.store.RAMDirectory
 import org.apache.lucene.util.Version
+import org.apache.lucene.search.highlight.*
 
-class LuceneSearchStrategy implements PageSearchStrategy, FileListener {
-    private final File docRoot
-    private final URI docRootURI
+class LuceneSearchStrategy implements PageSearchStrategy {
+    private final PageProvider provider
     private final Directory searchIndexDirectory
     private final LuceneFactory luceneFactory
-    private final Pattern fileNamePattern
 
-    LuceneSearchStrategy(File docRoot, Pattern fileNamePattern) {
-        this(docRoot, fileNamePattern, new RAMDirectory(), new LuceneFactory(Version.LUCENE_34))
+    final boolean searchSupported = true
+
+    LuceneSearchStrategy(PageProvider provider) {
+        this(provider, new RAMDirectory())
     }
 
-    LuceneSearchStrategy(File docRoot, Pattern fileNamePattern, Directory searchIndexDirectory, LuceneFactory luceneFactory) {
-        this.docRoot = docRoot
-        docRootURI = docRoot.toURI()
+    LuceneSearchStrategy(PageProvider provider, Directory searchIndexDirectory) {
+        this(provider, searchIndexDirectory, new LuceneFactory(Version.LUCENE_34))
+    }
+
+    LuceneSearchStrategy(PageProvider provider, Directory searchIndexDirectory, LuceneFactory luceneFactory) {
+        this.provider = provider
         this.searchIndexDirectory = searchIndexDirectory
         this.luceneFactory = luceneFactory
-        this.fileNamePattern = fileNamePattern
+
         createSearchIndex()
-    }
-
-    @Override
-    void fileCreated(FileChangeEvent event) {
-        luceneFactory.withIndexWriterForAppendOn(searchIndexDirectory) { IndexWriter idxWriter ->
-            idxWriter.addDocument(luceneDocumentFor(event.file.URL.toURI()))
-        }
-    }
-
-    @Override
-    void fileDeleted(FileChangeEvent event) {
-        luceneFactory.withIndexWriterForAppendOn(searchIndexDirectory) { IndexWriter idxWriter ->
-            idxWriter.deleteDocuments(new Term('uri', docRootURI.relativize(event.file.URL.toURI()).toString()))
-        }
-    }
-
-    @Override
-    void fileChanged(FileChangeEvent event) {
-        updateIndexWith(luceneDocumentFor(event.file.URL.toURI()))
-    }
-
-    private void updateIndexWith(Document document) {
-        luceneFactory.withIndexWriterForAppendOn(searchIndexDirectory) { IndexWriter idxWriter ->
-            idxWriter.updateDocument(new Term('uri', document.get('uri')), document)
-        }
-    }
-
-    @Override
-    boolean isSearchSupported() {
-        true
     }
 
     @Override
@@ -82,37 +56,85 @@ class LuceneSearchStrategy implements PageSearchStrategy, FileListener {
 
     SearchResults createSearchResults(IndexSearcher searcher, Query query, SearchResultsDisplayOptions options) {
         TopDocs topDocs = searcher.search(query, options.maxNumberOfResultsToRetrieve)
+        Highlighter highlighter = contentHighlighterFor(query)
+
         new SearchResults(
                 options,
                 topDocs.totalHits,
-                topDocs.scoreDocs.collect { ScoreDoc sc -> createResult(searcher.doc(sc.doc)) })
+                topDocs.scoreDocs.collect { ScoreDoc sc -> createSearchResult(searcher, sc, highlighter) })
     }
 
-    private SearchResult createResult(Document document) {
-        new SearchResult(new URI(document.get('uri')))
+    private SearchResult createSearchResult(IndexSearcher searcher, ScoreDoc sc, Highlighter highlighter) {
+        final doc = searcher.doc(sc.doc)
+        final TermPositionVector termPositionVector = (TermPositionVector) searcher.indexReader.getTermFreqVector(sc.doc, 'contents')
+        createResult(doc, resultHighlights(doc.get('contents'), highlighter, termPositionVector))
+    }
+
+    private List<String> resultHighlights(String contents, Highlighter highlighter, TermPositionVector termPosVector) {
+        Arrays.asList(highlighter.getBestFragments(
+                TokenSources.getTokenStream(termPosVector),
+                contents, 5))
+    }
+
+    private Highlighter contentHighlighterFor(Query query) {
+        Scorer scorer = new QueryScorer(query, 'contents')
+        Highlighter highlighter = new Highlighter(scorer)
+        highlighter.textFragmenter = new SimpleSpanFragmenter(scorer)
+        highlighter
+    }
+
+    private SearchResult createResult(Document document, List<String> highlights) {
+        new SearchResult(new URI(document.get('uri')), highlights)
     }
 
     private void createSearchIndex() {
         luceneFactory.withIndexWriterForCreationOn(searchIndexDirectory) { IndexWriter idxWriter ->
-            docRoot.eachFileMatch(FileType.FILES, fileNamePattern) { File file ->
-                idxWriter.addDocument(luceneDocumentFor(file.toURI()))
-            }
+            provider.eachPage { page -> idxWriter.addDocument(luceneDocumentFor(page)) }
         }
     }
 
-    private Document luceneDocumentFor(URI uri) {
+    private Document luceneDocumentFor(Page page) {
         Document doc = new Document()
-        doc.add(new Field('contents', uri.toURL().newReader()))
-        doc.add(uriFieldFor(uri))
+        doc.add(contentsFieldFor(page))
+        doc.add(uriFieldFor(page.uri))
         doc
     }
 
-    Field uriFieldFor(URI uri) {
+    private Field contentsFieldFor(Page page) {
+        return new Field('contents',
+                page.source.toString(),
+                Store.YES,
+                Index.ANALYZED,
+                TermVector.WITH_POSITIONS_OFFSETS)
+    }
+
+    private Field uriFieldFor(URI uri) {
         def uriField = new Field('uri',
-                docRootURI.relativize(uri).toString(),
+                uri.toString(),
                 Store.YES,
                 Index.NOT_ANALYZED_NO_NORMS)
         uriField.indexOptions = IndexOptions.DOCS_ONLY
         uriField
+    }
+
+    @Override
+    void creationOf(Page newPage) {
+        luceneFactory.withIndexWriterForAppendOn(searchIndexDirectory) { IndexWriter idxWriter ->
+            idxWriter.addDocument(luceneDocumentFor(newPage))
+        }
+    }
+
+    @Override
+    void updateOf(Page page) {
+        luceneFactory.withIndexWriterForAppendOn(searchIndexDirectory) { IndexWriter idxWriter ->
+            idxWriter.updateDocument(new Term('uri', luceneDocumentFor(page).get('uri')), luceneDocumentFor(page))
+        }
+    }
+
+    @Override
+    void removalOfPageIdentifiedBy(URI uri) {
+        luceneFactory.withIndexWriterForAppendOn(searchIndexDirectory) { IndexWriter idxWriter ->
+            idxWriter.deleteDocuments(new Term('uri', uri.toString()))
+        }
     }
 }

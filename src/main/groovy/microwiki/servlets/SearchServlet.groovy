@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import microwiki.pages.PageProvider
-import microwiki.pages.Templates
+import microwiki.servlets.view.Templates
 import microwiki.search.SearchResults
 
 class SearchServlet extends HttpServlet {

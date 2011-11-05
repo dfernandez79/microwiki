@@ -4,9 +4,9 @@ import microwiki.Server
 import microwiki.config.Config
 import microwiki.config.SearchConfig
 import microwiki.config.ServerConfig
-import microwiki.pages.PageTemplate
-import microwiki.pages.TemplateAdapter
-import microwiki.pages.Templates
+import microwiki.servlets.view.TemplateAdapter
+import microwiki.servlets.view.Templates
+import microwiki.servlets.view.ViewTemplate
 import org.codehaus.groovy.control.CompilerConfiguration
 
 class ConfigBuilder {
@@ -40,7 +40,7 @@ templates {
         server.readOnly = true
     }
 
-    PageTemplate inlineTemplate(String source) {
+    ViewTemplate inlineTemplate(String source) {
         TemplateAdapter.using(source)
     }
 
@@ -68,9 +68,10 @@ templates {
         int port = Server.DEFAULT_PORT
         String encoding = Server.DEFAULT_ENCODING
         boolean readOnly = false
+        boolean monitorFileChanges = true
 
         ServerConfig build() {
-            new ServerConfig(port, encoding, readOnly)
+            new ServerConfig(port, encoding, readOnly, monitorFileChanges)
         }
     }
 
@@ -98,8 +99,8 @@ templates {
                     search: template(search))
         }
 
-        private PageTemplate template(source) {
-            if (source instanceof PageTemplate) {
+        private ViewTemplate template(source) {
+            if (source instanceof ViewTemplate) {
                 source
             } else if (source instanceof String) {
                 TemplateAdapter.using(new File(source))

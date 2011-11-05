@@ -8,4 +8,6 @@ interface Page {
     Writable getHtml()
 
     String getEncoding()
+
+    String getTitle()
 }

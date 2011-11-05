@@ -41,7 +41,8 @@ def webServerDependencies() {
 def searchDependencies() {
     [
             [group: 'org.apache.commons', name: 'commons-vfs2', version: '2.0'],
-            [group: 'org.apache.lucene', version: '3.4.0', name: 'lucene-core']
+            [group: 'org.apache.lucene', version: '3.4.0', name: 'lucene-core'],
+            [group: 'org.apache.lucene', version: '3.4.0', name: 'lucene-highlighter']
     ]
 }
 

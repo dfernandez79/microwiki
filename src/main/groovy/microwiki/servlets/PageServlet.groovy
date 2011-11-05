@@ -2,8 +2,8 @@ package microwiki.servlets
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import microwiki.pages.Templates
-import microwiki.pages.PageTemplate
+import microwiki.servlets.view.Templates
+import microwiki.servlets.view.ViewTemplate
 import microwiki.pages.WritablePageProvider
 
 class PageServlet extends AbstractPageServlet {
@@ -12,7 +12,7 @@ class PageServlet extends AbstractPageServlet {
     }
 
     @Override
-    protected PageTemplate templateFor(HttpServletRequest req) {
+    protected ViewTemplate templateFor(HttpServletRequest req) {
         (req.getParameter('edit') != null) ? templates.edit : templates.display
     }
 
