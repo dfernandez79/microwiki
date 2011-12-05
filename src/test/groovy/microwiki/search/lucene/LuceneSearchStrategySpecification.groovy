@@ -97,4 +97,16 @@ This is a <B>test</B> page''']
         then:
         results.searchQuery == 'test'
     }
+
+    def "The file name is also included in search"() {
+        // TODO
+    }
+
+    def "Display results without highlights"() {
+        // TODO
+    }
+
+    def "The search result includes the page title"() {
+        // TODO
+    }
 }

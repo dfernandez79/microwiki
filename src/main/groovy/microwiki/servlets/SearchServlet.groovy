@@ -12,6 +12,7 @@ class SearchServlet extends HttpServlet {
     private Templates templates
 
     public SearchServlet(PageProvider pageProvider, Templates templates) {
+        // TODO add the default display options
         this.pageProvider = pageProvider
         this.templates = templates
     }

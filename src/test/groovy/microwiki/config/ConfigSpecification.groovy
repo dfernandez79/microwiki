@@ -119,6 +119,14 @@ Templates:
         tempDir?.deleteDir()
     }
 
+    def "Specify the search index storage method"() {
+        // TODO
+    }
+
+    def "By default use the file system to store the search index"() {
+        // TODO
+    }
+
     private String configTemplateAndDisplay(File tempFile, String t) {
         def out = new StringWriter()
         configWith("templates { $t = '$tempFile' }").templates."$t".applyWith(contextFor(t)).writeTo(out)
