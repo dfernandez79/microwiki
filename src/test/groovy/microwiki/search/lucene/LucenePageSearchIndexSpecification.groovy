@@ -5,10 +5,10 @@ import microwiki.pages.WritablePageProvider
 import microwiki.pages.markdown.MarkdownPageProvider
 import microwiki.search.SearchResultsDisplayOptions
 
-class LuceneSearchStrategySpecification extends spock.lang.Specification {
+class LucenePageSearchIndexSpecification extends spock.lang.Specification {
     private static File tempDirectory
     private File testFile
-    private LuceneSearchStrategy strategy
+    private LucenePageSearchIndex searchIndex
     private WritablePageProvider provider
 
     def setupSpec() {
@@ -20,15 +20,14 @@ class LuceneSearchStrategySpecification extends spock.lang.Specification {
     }
 
     def setup() {
-        testFile = new File(tempDirectory, 'test.md')
+        testFile = new File(tempDirectory, 'file.md')
         testFile.text = '''Test Page
 -----------
 
 This is a test page'''
 
         provider = new MarkdownPageProvider(tempDirectory, 'UTF-8')
-        strategy = new LuceneSearchStrategy()
-        strategy.createSearchIndexWithPagesFrom(provider)
+        searchIndex = new LucenePageSearchIndex(provider)
     }
 
     def cleanup() {
@@ -37,38 +36,38 @@ This is a test page'''
 
     def "Search for text in an existing file"() {
         when:
-        def results = strategy.search('test', SearchResultsDisplayOptions.defaultOptions())
+        def results = searchIndex.search('test', SearchResultsDisplayOptions.default)
 
         then:
         !results.retrievedResults.empty
         results.retrievedResults.size() == 1
-        results.retrievedResults[0].uri == new URI('test.md')
+        results.retrievedResults[0].uri == new URI('file.md')
     }
 
     def "Changes in pages updates the search index"() {
         when:
-        provider.writePage('test.md'.toURI()) { out -> out.write 'hello' }
-        strategy.updateOf(provider.pageFor('test.md'.toURI()))
+        provider.writePage('file.md'.toURI()) { out -> out.write 'hello' }
+        searchIndex.updateOfPageIdentifiedBy('file.md'.toURI())
 
         then:
-        strategy.search('test', SearchResultsDisplayOptions.defaultOptions()).retrievedResults.empty
-        strategy.search('hello', SearchResultsDisplayOptions.defaultOptions()).retrievedResults.size() == 1
+        searchIndex.search('test', SearchResultsDisplayOptions.default).retrievedResults.empty
+        searchIndex.search('hello', SearchResultsDisplayOptions.default).retrievedResults.size() == 1
     }
 
     def "Removed pages are removed from the search index"() {
         when:
         testFile.delete()
-        strategy.removalOfPageIdentifiedBy('test.md'.toURI())
+        searchIndex.removalOfPageIdentifiedBy('file.md'.toURI())
 
         then:
-        strategy.search('test', SearchResultsDisplayOptions.defaultOptions()).retrievedResults.empty
+        searchIndex.search('test', SearchResultsDisplayOptions.default).retrievedResults.empty
     }
 
     def "New pages are indexed"() {
         when:
         provider.writePage('new.md'.toURI()) { out -> out.write 'hello world' }
-        strategy.creationOf(provider.pageFor('new.md'.toURI()))
-        def results = strategy.search('hello', SearchResultsDisplayOptions.defaultOptions())
+        searchIndex.creationOfPageIdentifiedBy('new.md'.toURI())
+        def results = searchIndex.search('hello', SearchResultsDisplayOptions.default)
 
         then:
         !results.retrievedResults.empty
@@ -78,7 +77,7 @@ This is a test page'''
 
     def "Search result contains highlight fragments"() {
         when:
-        def results = strategy.search('test', SearchResultsDisplayOptions.defaultOptions())
+        def results = searchIndex.search('test', SearchResultsDisplayOptions.default)
 
         then:
         !results.retrievedResults.empty
@@ -92,21 +91,29 @@ This is a <B>test</B> page''']
 
     def "The results reports the query used to obtain them"() {
         when:
-        def results = strategy.search('test', SearchResultsDisplayOptions.defaultOptions())
+        def results = searchIndex.search('test', SearchResultsDisplayOptions.default)
 
         then:
-        results.searchQuery == 'test'
+        results.textToSearch == 'test'
     }
 
     def "The file name is also included in search"() {
-        // TODO
-    }
+        when:
+        def results = searchIndex.search('file', SearchResultsDisplayOptions.default)
 
-    def "Display results without highlights"() {
-        // TODO
+        then:
+        !results.retrievedResults.empty
+        results.retrievedResults.size() == 1
+        results.retrievedResults[0].uri == new URI('file.md')
     }
 
     def "The search result includes the page title"() {
-        // TODO
+        when:
+        def results = searchIndex.search('file', SearchResultsDisplayOptions.default)
+
+        then:
+        !results.retrievedResults.empty
+        results.retrievedResults.size() == 1
+        results.retrievedResults[0].title == 'Test Page'
     }
 }

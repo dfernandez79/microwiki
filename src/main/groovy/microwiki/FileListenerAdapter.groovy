@@ -3,7 +3,6 @@ package microwiki
 import microwiki.pages.PageChangeListener
 import org.apache.commons.vfs2.FileChangeEvent
 import org.apache.commons.vfs2.FileListener
-import microwiki.pages.markdown.MarkdownPageProvider
 
 class FileListenerAdapter implements FileListener {
     private final PageChangeListener pageChangeListener

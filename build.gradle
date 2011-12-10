@@ -39,10 +39,11 @@ def webServerDependencies() {
  It allows to do a fast page search
  */
 def searchDependencies() {
+    String luceneVersion = '3.5.0'
     [
             [group: 'org.apache.commons', name: 'commons-vfs2', version: '2.0'],
-            [group: 'org.apache.lucene', version: '3.4.0', name: 'lucene-core'],
-            [group: 'org.apache.lucene', version: '3.4.0', name: 'lucene-highlighter']
+            [group: 'org.apache.lucene', version: luceneVersion, name: 'lucene-queryparser'],
+            [group: 'org.apache.lucene', version: luceneVersion, name: 'lucene-highlighter']
     ]
 }
 

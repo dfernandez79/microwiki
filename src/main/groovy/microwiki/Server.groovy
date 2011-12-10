@@ -5,8 +5,11 @@ import org.eclipse.jetty.server.Server as JettyServer
 import javax.servlet.http.HttpServlet
 import microwiki.config.Config
 import microwiki.pages.PageProvider
+import microwiki.pages.WritablePageProvider
 import microwiki.pages.markdown.MarkdownPageProvider
-import microwiki.search.lucene.LuceneSearchStrategy
+import microwiki.search.PageSearchIndex
+import microwiki.search.SearchResultsDisplayOptions
+import microwiki.search.lucene.LucenePageSearchIndex
 import microwiki.servlets.PageServlet
 import microwiki.servlets.ReadonlyPageServlet
 import microwiki.servlets.SearchServlet
@@ -28,6 +31,7 @@ class Server {
 
     private final JettyServer server
     private final DefaultFileMonitor fileChangeMonitor
+    private final PageSearchIndex searchIndex
 
     Server(File docRoot, Config config) {
         this.docRoot = docRoot
@@ -35,20 +39,22 @@ class Server {
 
         server = new JettyServer(config.server.port)
         provider = createPageProvider()
-        initializeServerHandlers()
 
-        if (config.server.monitorFileChanges) {
-            fileChangeMonitor = new DefaultFileMonitor(new FileListenerAdapter(provider))
+        if (config.search.enabled) {
+            searchIndex = new LucenePageSearchIndex(provider)
+            fileChangeMonitor = new DefaultFileMonitor(new FileListenerAdapter(searchIndex))
         } else {
+            searchIndex = null
             fileChangeMonitor = null
         }
+        initializeServerHandlers()
     }
 
     private HttpServlet createPageServlet() {
-        if (config.server.readOnly) {
-            new ReadonlyPageServlet(provider, config.templates)
+        if (config.server.readOnly || !(provider instanceof WritablePageProvider)) {
+            new ReadonlyPageServlet(provider, config.search.enabled, config.templates)
         } else {
-            new PageServlet(provider, config.templates)
+            new PageServlet((WritablePageProvider) provider, config.search.enabled, config.templates)
         }
     }
 
@@ -60,8 +66,10 @@ class Server {
             baseResource = docRootResource
             contextPath = '/'
             addServlet(new ServletHolder(createPageServlet()), '*.md')
-            if (provider.searchSupported) {
-                addServlet(new ServletHolder(new SearchServlet(provider, config.templates)), '/search')
+            if (config.search.enabled) {
+                addServlet(new ServletHolder(
+                        new SearchServlet(searchIndex, SearchResultsDisplayOptions.default, config.templates)),
+                        '/search')
             }
         }
 
@@ -81,18 +89,7 @@ class Server {
     }
 
     private PageProvider createPageProvider() {
-        if (config.search.enabled) {
-            createPageProviderWithPageSearch()
-        } else {
-            new MarkdownPageProvider(docRoot, config.server.encoding)
-        }
-    }
-
-    private PageProvider createPageProviderWithPageSearch() {
-        LuceneSearchStrategy luceneSearchStrategy = new LuceneSearchStrategy()
-        PageProvider newProvider = new MarkdownPageProvider(docRoot, config.server.encoding, luceneSearchStrategy)
-        luceneSearchStrategy.createSearchIndexWithPagesFrom(newProvider)
-        newProvider
+        new MarkdownPageProvider(docRoot, config.server.encoding)
     }
 
     void start() {

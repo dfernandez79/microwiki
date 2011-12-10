@@ -2,14 +2,10 @@ package microwiki.cli
 
 import java.awt.Desktop
 import java.awt.Desktop.Action
-import javax.servlet.http.HttpServlet
 import microwiki.Server
-import microwiki.pages.markdown.MarkdownPageProvider
-import microwiki.servlets.PageServlet
-import microwiki.servlets.ReadonlyPageServlet
 import microwiki.config.Config
-import microwiki.config.dsl.ConfigScriptException
 import microwiki.config.dsl.ConfigBuilder
+import microwiki.config.dsl.ConfigScriptException
 
 class Launcher {
     static final LAUNCHER_PROGRAM = 'microwiki'

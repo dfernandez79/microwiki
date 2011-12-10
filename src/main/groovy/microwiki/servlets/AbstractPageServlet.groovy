@@ -3,18 +3,22 @@ package microwiki.servlets
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import microwiki.pages.Page
+import microwiki.pages.PageProvider
+import microwiki.pages.PageSourceNotFoundException
 import microwiki.servlets.view.Templates
-import microwiki.pages.*
 import microwiki.servlets.view.ViewTemplate
 
 abstract class AbstractPageServlet extends HttpServlet {
     private static final int RESPONSE_BUFFER_SIZE = 64 * 1024
     protected final PageProvider pageProvider
     protected final Templates templates
+    protected final boolean searchEnabled
 
-    protected AbstractPageServlet(PageProvider pageProvider, Templates templates) {
+    protected AbstractPageServlet(PageProvider pageProvider, boolean searchEnabled, Templates templates) {
         this.pageProvider = pageProvider
         this.templates = templates
+        this.searchEnabled = searchEnabled
     }
 
     @Override
@@ -35,7 +39,7 @@ abstract class AbstractPageServlet extends HttpServlet {
         resp.characterEncoding = page.encoding
         template.applyWith(
                 page: page,
-                searchSupported: pageProvider.searchSupported).writeTo(resp.writer)
+                searchEnabled: searchEnabled).writeTo(resp.writer)
     }
 
 

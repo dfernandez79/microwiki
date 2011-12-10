@@ -1,5 +1,7 @@
 package microwiki.config.dsl
 
+import microwiki.config.SearchConfig
+
 abstract class ConfigScript extends Script {
     void server(Closure closure) {
         binding.builder.server.with closure

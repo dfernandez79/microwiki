@@ -7,11 +7,14 @@
 </head>
 <body>
 <div id="commands">
-    <% if (searchSupported) { %>
+    <% if (searchEnabled) { %>
     <div id="search">
         <form action="/search"><input placeholder="Search" name="q" type="search"/></form>
-    </div><% } %>
-    <% if (!readonly) { %><div id="edit"><a href="?edit">Edit</a></div><% } %>
+    </div>
+    <% } %>
+    <% if (!readonly) { %>
+    <div id="edit"><a href="?edit">Edit</a></div>
+    <% } %>
 </div>
 <div id="content">${page.html}</div>
 </body>

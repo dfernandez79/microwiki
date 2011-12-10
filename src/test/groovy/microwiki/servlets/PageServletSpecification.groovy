@@ -34,7 +34,7 @@ class PageServletSpecification extends ServletSpecification {
         pageProvider = new MarkdownPageProvider(tempDirectory, 'UTF-8')
         helloPage = pageProvider.pageFor('hello.md')
         templates = new Templates()
-        servlet = new PageServlet(pageProvider, templates)
+        servlet = new PageServlet(pageProvider, false, templates)
     }
 
     def "When method is GET display the page"() {
@@ -49,7 +49,7 @@ class PageServletSpecification extends ServletSpecification {
     }
 
     Map context(Page page) {
-        [page: page, searchSupported: false]
+        [page: page, searchEnabled: false]
     }
 
     def "When method is GET and the ?edit parameter is specified, display the edit page"() {

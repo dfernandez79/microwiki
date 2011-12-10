@@ -19,6 +19,7 @@ server {
 }
 search {
     enabled = true // by default is true
+    indexStorageMethod = filesystem('.microwiki-index') // other option is memory
 }
 templates {
     display = 'displ.html' // Strings represents file names in the current directory
@@ -68,18 +69,29 @@ templates {
         int port = Server.DEFAULT_PORT
         String encoding = Server.DEFAULT_ENCODING
         boolean readOnly = false
-        boolean monitorFileChanges = true
 
         ServerConfig build() {
-            new ServerConfig(port, encoding, readOnly, monitorFileChanges)
+            new ServerConfig(port, encoding, readOnly)
         }
     }
 
     static class SearchConfigBuilder {
         boolean enabled = true
+        Map indexStorageMethod = SearchConfig.DEFAULT_FILESYSTEM_STORAGE
+
+        final Map memory = SearchConfig.MEMORY_INDEX_STORAGE
+        final Map filesystem = SearchConfig.DEFAULT_FILESYSTEM_STORAGE
+
+        Map filesystem(String path) {
+            filesystem(new File(path))
+        }
+
+        Map filesystem(File path) {
+            [directory: path]
+        }
 
         SearchConfig build() {
-            new SearchConfig(enabled)
+            new SearchConfig(enabled, indexStorageMethod)
         }
     }
 

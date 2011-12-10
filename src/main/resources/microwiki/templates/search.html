@@ -13,9 +13,14 @@
 </div>
 <div id="content">
     <h1>Search results for ${results?.searchQuery}</h1>
+
     <div id="results">
         <ul>
-        <% results?.retrievedResults.each { %><li><a href="${it.uri}">${it.uri}</a><p>${it.highlights}</p></li><% } %>
+            <% results?.retrievedResults.each { %>
+            <li><a href="${it.uri}">${it.uri}</a>
+
+                <p>${it.highlights}</p></li>
+            <% } %>
         </ul>
     </div>
 </div>

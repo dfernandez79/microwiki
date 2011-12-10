@@ -8,9 +8,8 @@ class ServerConfig {
     int port
     String encoding
     boolean readOnly
-    boolean monitorFileChanges
 
     static ServerConfig getDefault() {
-        new ServerConfig(Server.DEFAULT_PORT, Server.DEFAULT_ENCODING, false, true)
+        new ServerConfig(Server.DEFAULT_PORT, Server.DEFAULT_ENCODING, false)
     }
 }

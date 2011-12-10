@@ -3,17 +3,23 @@ package microwiki.servlets
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import microwiki.pages.PageProvider
-import microwiki.servlets.view.Templates
+import microwiki.search.PageSearchIndex
 import microwiki.search.SearchResults
+import microwiki.search.SearchResultsDisplayOptions
+import microwiki.servlets.view.Templates
 
 class SearchServlet extends HttpServlet {
-    private PageProvider pageProvider
+    private PageSearchIndex searchIndex
+    private SearchResultsDisplayOptions displayOptions
     private Templates templates
 
-    public SearchServlet(PageProvider pageProvider, Templates templates) {
-        // TODO add the default display options
-        this.pageProvider = pageProvider
+    public SearchServlet(PageSearchIndex searchIndex, Templates templates) {
+        this(searchIndex, SearchResultsDisplayOptions.default, templates)
+    }
+
+    public SearchServlet(PageSearchIndex searchIndex, SearchResultsDisplayOptions displayOptions, Templates templates) {
+        this.searchIndex = searchIndex
+        this.displayOptions = displayOptions
         this.templates = templates
     }
 
@@ -24,18 +30,13 @@ class SearchServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        if (!pageProvider.searchSupported) {
-            resp.sendError(HttpServletResponse.SC_FORBIDDEN, 'The page search functionality is not available')
-            return
-        }
-
         String query = req.getParameter('q')
         if (query == null || query.trim().empty) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, 'A search query must be specified')
             return
         }
 
-        SearchResults results = pageProvider.search(query)
+        SearchResults results = searchIndex.search(query, displayOptions)
         resp.contentType = 'text/html'
         templates.search.applyWith(results: results).writeTo(resp.writer)
     }

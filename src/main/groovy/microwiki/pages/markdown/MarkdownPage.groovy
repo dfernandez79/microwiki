@@ -19,7 +19,7 @@ class MarkdownPage implements Page {
     @Lazy String title = {
         Node firstHeaderNode = document.children.find { it instanceof HeaderNode }
         TextNode headerText = (TextNode) firstHeaderNode?.children?.find { it instanceof TextNode }
-        headerText?.text
+        headerText?.text ?: uri.path
     }()
 
     MarkdownPage(URI uri, sourceData, String encoding) {

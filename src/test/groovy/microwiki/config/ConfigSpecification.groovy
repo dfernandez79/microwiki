@@ -40,14 +40,6 @@ class ConfigSpecification extends spock.lang.Specification {
         config.server.encoding == 'UTF-8'
     }
 
-    def "By default monitoring of file changes is enabled"() {
-        when:
-        def config = configWith('')
-
-        then:
-        config.server.monitorFileChanges
-    }
-
     def "Templates can be configured with the templates section"() {
         setup:
         File tempDir = TempDirectory.create()
@@ -120,11 +112,29 @@ Templates:
     }
 
     def "Specify the search index storage method"() {
-        // TODO
+        when:
+        def config = configWith('search { indexStorageMethod = memory }')
+
+        then:
+        config.search.indexStorageMethod == SearchConfig.MEMORY_INDEX_STORAGE
+    }
+
+    def "Specify the search index storage using filesystem and a directory"() {
+        when:
+        def config = configWith('search { indexStorageMethod = filesystem(\'index\') }')
+
+        then:
+        config.search.indexStorageMethod == [directory: new File('index')]
     }
 
     def "By default use the file system to store the search index"() {
-        // TODO
+        expect:
+        new Config().search.indexStorageMethod == SearchConfig.DEFAULT_FILESYSTEM_STORAGE
+    }
+    
+    def "By default the file system method uses the .microwiki-index relative directory"() {
+        expect:
+        new Config().search.indexStorageMethod.directory == new File('.microwiki-index')
     }
 
     private String configTemplateAndDisplay(File tempFile, String t) {

@@ -7,7 +7,7 @@ import groovy.transform.Immutable
 
     int maxNumberOfResultsToRetrieve
 
-    static SearchResultsDisplayOptions defaultOptions() {
+    static SearchResultsDisplayOptions getDefault() {
         new SearchResultsDisplayOptions(DEFAULT_PAGE_SIZE)
     }
 }
