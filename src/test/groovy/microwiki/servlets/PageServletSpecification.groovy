@@ -38,11 +38,8 @@ class PageServletSpecification extends ServletSpecification {
     }
 
     def "When method is GET display the page"() {
-        setup:
-        HttpServletRequest request = requestFor('/hello.md')
-
         when:
-        servlet.doGet(request, response)
+        servlet.doGet(requestFor('/hello.md'), response)
 
         then:
         responseOutput.toString() == templates.display.applyWith(context(helloPage)).toString()
@@ -53,22 +50,16 @@ class PageServletSpecification extends ServletSpecification {
     }
 
     def "When method is GET and the ?edit parameter is specified, display the edit page"() {
-        setup:
-        HttpServletRequest request = requestFor('/hello.md', [edit: ''])
-
         when:
-        servlet.doGet(request, response)
+        servlet.doGet(requestFor('/hello.md', [edit: '']), response)
 
         then:
         responseOutput.toString() == templates.edit.applyWith(context(helloPage)).toString()
     }
 
     def "When method is POST and contents is specified, write the page contents"() {
-        setup:
-        HttpServletRequest request = requestFor('/hello.md', [contents: 'New content'])
-
         when:
-        servlet.doPost(request, response)
+        servlet.doPost(requestFor('/hello.md', [contents: 'New content']), response)
 
         then:
         helloPage.source.toString() == 'New content'
@@ -78,11 +69,8 @@ class PageServletSpecification extends ServletSpecification {
     }
 
     def "When method is POST, contents is specified and page doesn't exists, write the page contents"() {
-        setup:
-        HttpServletRequest request = requestFor('/' + NOT_FOUND_URI.path, [contents: 'New content'])
-
         when:
-        servlet.doPost(request, response)
+        servlet.doPost(requestFor('/' + NOT_FOUND_URI.path, [contents: 'New content']), response)
 
         then:
         pageProvider.pageFor(NOT_FOUND_URI).source.toString() == 'New content'
@@ -92,22 +80,16 @@ class PageServletSpecification extends ServletSpecification {
     }
 
     def "If the file is not found, display the edit page with the new file action"() {
-        setup:
-        HttpServletRequest request = requestFor('/' + NOT_FOUND_URI.path)
-
         when:
-        servlet.doGet(request, response)
+        servlet.doGet(requestFor('/' + NOT_FOUND_URI.path), response)
 
         then:
         responseOutput.toString() == templates.create.applyWith(context(pageProvider.newPageSampleFor(NOT_FOUND_URI))).toString()
     }
 
     def "If the file is not found and the ?edit parameter is specified, display the edit page with the new file action"() {
-        setup:
-        HttpServletRequest request = requestFor('/' + NOT_FOUND_URI.path, [edit: ''])
-
         when:
-        servlet.doGet(request, response)
+        servlet.doGet(requestFor('/' + NOT_FOUND_URI.path, [edit: '']), response)
 
         then:
         responseOutput.toString() == templates.create.applyWith(context(pageProvider.newPageSampleFor(NOT_FOUND_URI))).toString()

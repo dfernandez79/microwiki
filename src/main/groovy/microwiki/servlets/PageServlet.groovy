@@ -7,8 +7,11 @@ import microwiki.servlets.view.Templates
 import microwiki.servlets.view.ViewTemplate
 
 class PageServlet extends AbstractPageServlet {
+    private Templates templates
+
     PageServlet(WritablePageProvider pageProvider, boolean searchEnabled, Templates templates) {
-        super(pageProvider, searchEnabled, templates)
+        super(pageProvider, searchEnabled)
+        this.templates = templates
     }
 
     @Override

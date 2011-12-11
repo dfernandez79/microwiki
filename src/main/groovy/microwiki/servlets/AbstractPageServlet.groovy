@@ -12,12 +12,10 @@ import microwiki.servlets.view.ViewTemplate
 abstract class AbstractPageServlet extends HttpServlet {
     private static final int RESPONSE_BUFFER_SIZE = 64 * 1024
     protected final PageProvider pageProvider
-    protected final Templates templates
     protected final boolean searchEnabled
 
-    protected AbstractPageServlet(PageProvider pageProvider, boolean searchEnabled, Templates templates) {
+    protected AbstractPageServlet(PageProvider pageProvider, boolean searchEnabled) {
         this.pageProvider = pageProvider
-        this.templates = templates
         this.searchEnabled = searchEnabled
     }
 
