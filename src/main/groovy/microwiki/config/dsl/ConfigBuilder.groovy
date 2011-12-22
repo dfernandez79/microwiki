@@ -111,13 +111,17 @@ templates {
                     search: template(search))
         }
 
-        private ViewTemplate template(source) {
+        ViewTemplate debug(source, Map context = [:]) {
+            { Map ctx -> template(source, context).applyWith(ctx) } as ViewTemplate
+        }
+        
+        private static ViewTemplate template(source, Map context = [:]) {
             if (source instanceof ViewTemplate) {
                 source
             } else if (source instanceof String) {
-                TemplateAdapter.using(new File(source))
+                TemplateAdapter.using(new File(source), context)
             } else {
-                TemplateAdapter.using(source)
+                TemplateAdapter.using(source, context)
             }
         }
     }
