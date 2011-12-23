@@ -2,6 +2,7 @@ package microwiki.servlets
 
 import microwiki.TempDirectory
 import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 class DirectoryListingServletSpecification extends ServletSpecification {
     private static File baseDir
@@ -55,7 +56,11 @@ class DirectoryListingServletSpecification extends ServletSpecification {
     }
     
     def "Don't allow navigation outside the base directory"() {
-        // TODO
+        when:
+        directoryListingServlet.doGet(requestFor('/..'), response)
+
+        then:
+        response.status == HttpServletResponse.SC_FORBIDDEN
     }
 
     def "Use the template to display results"() {
