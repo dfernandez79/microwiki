@@ -112,9 +112,19 @@ templates {
         }
 
         ViewTemplate debug(source, Map context = [:]) {
-            { Map ctx -> template(source, context).applyWith(ctx) } as ViewTemplate
+            new ViewTemplate() {
+                @Override
+                Writable applyWith(Map ctx) {
+                    template(source, context).applyWith(ctx)
+                }
+
+                @Override
+                String toString() {
+                    "DEBUG MODE [$source]"
+                }
+            }
         }
-        
+
         private static ViewTemplate template(source, Map context = [:]) {
             if (source instanceof ViewTemplate) {
                 source

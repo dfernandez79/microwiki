@@ -2,6 +2,7 @@ package microwiki
 
 import org.eclipse.jetty.server.Server as JettyServer
 
+import javax.servlet.Filter
 import javax.servlet.http.HttpServlet
 import microwiki.config.Config
 import microwiki.pages.PageProvider
@@ -10,16 +11,14 @@ import microwiki.pages.markdown.MarkdownPageProvider
 import microwiki.search.PageSearchIndex
 import microwiki.search.SearchResultsDisplayOptions
 import microwiki.search.lucene.LucenePageSearchIndex
+import microwiki.servlets.DirectoryListingFilter
 import microwiki.servlets.PageServlet
 import microwiki.servlets.ReadonlyPageServlet
 import microwiki.servlets.SearchServlet
 import org.apache.commons.vfs2.impl.DefaultFileMonitor
-import org.eclipse.jetty.server.handler.DefaultHandler
-import org.eclipse.jetty.server.handler.HandlerList
-import org.eclipse.jetty.server.handler.ResourceHandler
-import org.eclipse.jetty.servlet.ServletContextHandler
-import org.eclipse.jetty.servlet.ServletHolder
 import org.eclipse.jetty.util.resource.Resource
+import org.eclipse.jetty.util.resource.ResourceCollection
+import org.eclipse.jetty.servlet.*
 
 class Server {
     static final int DEFAULT_PORT = 9999
@@ -59,33 +58,40 @@ class Server {
     }
 
     private initializeServerHandlers() {
-        def docRootResource = Resource.newResource(docRoot)
+        server.handler = new ServletContextHandler().with {
+            baseResource = new ResourceCollection(
+                    Resource.newResource(docRoot),
+                    Resource.newClassPathResource('/microwiki/static'))
 
-        def servletContextHandler = new ServletContextHandler()
-        servletContextHandler.with {
-            baseResource = docRootResource
             contextPath = '/'
+
             addServlet(new ServletHolder(createPageServlet()), '*.md')
             if (config.search.enabled) {
-                addServlet(new ServletHolder(
-                        new SearchServlet(searchIndex, SearchResultsDisplayOptions.default, config.templates)),
-                        '/search')
+                addServlet(new ServletHolder(createSearchServlet()), '/search')
             }
+
+            def defaultServletHolder = new ServletHolder(new DefaultServlet())
+            // TODO temporal to make debugging easier, remove after that
+            defaultServletHolder.setInitParameter('aliases', 'true')
+
+            addServlet(defaultServletHolder, '/')
+
+            def directoryListingFilterHolder = new FilterHolder(createDirectoryListingFilter())
+            servletHandler.addFilter(directoryListingFilterHolder,
+                    new FilterMapping(
+                            filterName: directoryListingFilterHolder.name,
+                            servletName: defaultServletHolder.name))
+
+            it
         }
+    }
 
-        def docRootResourceHandler = new ResourceHandler(
-                directoriesListed: true,
-                baseResource: docRootResource)
+    private SearchServlet createSearchServlet() {
+        new SearchServlet(searchIndex, SearchResultsDisplayOptions.default, config.templates)
+    }
 
-        def fallbackResourceHandler = new ResourceHandler(
-                directoriesListed: false,
-                baseResource: Resource.newClassPathResource('/microwiki/static'))
-
-        server.handler = new HandlerList(handlers: [
-                servletContextHandler,
-                docRootResourceHandler,
-                fallbackResourceHandler,
-                new DefaultHandler()])
+    private Filter createDirectoryListingFilter() {
+        new DirectoryListingFilter(['*.md'], docRoot, config.templates.directoryListing)
     }
 
     private PageProvider createPageProvider() {

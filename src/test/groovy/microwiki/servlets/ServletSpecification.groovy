@@ -21,6 +21,7 @@ abstract class ServletSpecification extends spock.lang.Specification {
 
     protected HttpServletRequest requestFor(String path, Map<String, String> parameters = null) {
         HttpServletRequest req = Mock()
+        req.method >> 'GET'
         req.servletPath >> path
         if (parameters != null) {
             req.getParameter(_ as String) >> { parameters.get(it.get(0)) }

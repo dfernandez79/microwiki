@@ -16,7 +16,7 @@
     font-family: 'Droid Serif';
     font-style: normal;
     font-weight: bold;
-    src: local('Droid Serif'), local('DroidSerif'), url('/DroidSerif-Bold.ttf') format('truetype');
+    src: local('Droid Serif Bold'), local('DroidSerifBold'), url('/DroidSerif-Bold.ttf') format('truetype');
 }
 
 @font-face {
@@ -37,7 +37,7 @@
     font-family: 'Droid Sans';
     font-style: normal;
     font-weight: bold;
-    src: local('Droid Sans'), local('DroidSans'), url('/DroidSans-Bold.ttf') format('truetype');
+    src: local('Droid Sans Bold'), local('DroidSansBold'), url('/DroidSans-Bold.ttf') format('truetype');
 }
 
 @font-face {

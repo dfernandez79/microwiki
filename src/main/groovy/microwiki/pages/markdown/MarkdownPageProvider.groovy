@@ -5,7 +5,6 @@ import java.util.regex.Pattern
 import microwiki.pages.Page
 import microwiki.pages.WritablePageProvider
 
-// TODO 10. Finish the listing servlet
 // TODO 11. Change fonts
 // TODO 12. Add hyphenation
 // TODO 13. Add jQuery animation for quickref
@@ -58,7 +57,7 @@ class MarkdownPageProvider implements WritablePageProvider {
     }
 
     private URI relativize(URI uri) {
-        return docRootURI.relativize(uri)
+        docRootURI.relativize(uri)
     }
 
 

@@ -40,6 +40,6 @@ class MarkdownPage implements Page {
     }
 
     private String htmlFromMarkdown() {
-        new ToHtmlSerializer().toHtml(document);
+        new ToHtmlSerializer().toHtml(document)
     }
 }

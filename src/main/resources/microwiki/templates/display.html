@@ -5,17 +5,17 @@
     <link href="/fonts.css" rel="stylesheet" type="text/css"/>
     <link href="/style.css" rel="stylesheet" type="text/css"/>
 </head>
-<body>
-<div id="commands">
-    <% if (searchEnabled) { %>
-    <div id="search">
-        <form action="/search"><input placeholder="Search" name="q" type="search"/></form>
-    </div>
-    <% } %>
-    <% if (!readonly) { %>
-    <div id="edit"><a href="?edit">Edit</a></div>
-    <% } %>
-</div>
+<body><div id="container">
+<% if (!readonly) { %>
+<div id="edit"><a class="command" href="?edit">Edit</a></div>
+<% } %>
+
 <div id="content">${page.html}</div>
-</body>
+
+<% if (searchEnabled) { %>
+<div id="footer">
+    <form action="/search"><input placeholder="Search" name="q" type="search"/></form>
+</div>
+<% } %>
+</div></body>
 </html>

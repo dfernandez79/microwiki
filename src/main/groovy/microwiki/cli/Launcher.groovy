@@ -103,7 +103,7 @@ class Launcher {
     }
 
     File resolveDocRoot(List<String> args) {
-        File docRoot = args.empty ? new File('.') : new File(args[0]);
+        File docRoot = args.empty ? new File('.') : new File(args[0])
         if (!(docRoot.directory && docRoot.canRead())) {
             throw new IllegalArgumentException("$docRoot is not an existing or readable directory")
         }

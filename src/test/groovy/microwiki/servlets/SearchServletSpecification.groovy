@@ -35,7 +35,7 @@ class SearchServletSpecification extends ServletSpecification {
     }
 
     HttpServletRequest searchRequest() {
-        return requestFor('/search', [q: 'test'])
+        requestFor('/search', [q: 'test'])
     }
 
     def "The search results are displayed using the search template"() {

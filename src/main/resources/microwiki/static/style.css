@@ -1,5 +1,6 @@
 html {
-    background: #E0E0E0 none repeat scroll 0 0;
+    background: whiteSmoke none repeat scroll 0 0;
+    background-image: url('/noise.png');
 }
 
 html, body, div, ul, ol, li, dl, dt, dd, h1, h2, h3, h4, h5, h6, pre, form, p, blockquote, fieldset, input {
@@ -15,20 +16,20 @@ ul, ol {
 pre, code {
     font-family: 'Droid Sans Mono', monospace, sans-serif;
     font-size: 95%;
-    background-color: #f1f1f1;
 }
 
 code {
-    border:  1px solid #f1f1f1;
     padding-left: 2px;
     padding-right: 2px;
-    border-radius: 5px;
+    text-shadow: none;
 }
 
 blockquote, pre {
+    background-color: #E1E3C2;
     padding: 0.5em;
-    border-left: 6px solid lightgray;
+    border-left: 6px solid #9AA48C;
     margin-bottom: 1em;
+    text-shadow: none;
 }
 
 blockquote>p:last-child {
@@ -40,9 +41,8 @@ p {
 }
 
 body {
-    font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
-    color: #333;
-    border-radius: 5px;
+    font-family: 'Droid Serif', Georgia, Times, serif;
+    color: #5C5C5B;
 }
 
 #content>h1:first-child {
@@ -50,66 +50,72 @@ body {
 }
 
 h1, h2 {
-    font-family: 'Droid Serif', Georgia, Times, serif;
-    margin-top: 0.8em;
+    font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
+    margin-top: 2em;
+    color: #9B4115;
+    text-shadow: 1px 1px 1px white;
+}
+
+h1 {
+    margin-bottom: 1em;
+}
+
+h2 {
     margin-bottom: 0.3em;
 }
 
 #content {
+    position: relative;
     width: auto;
-    padding: 38px;
-    background-color: white;
-    margin: 0 38px 25px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    padding-left: 38px;
+    padding-right: 38px;
+    padding-top: 76px;
+    padding-bottom: 178px;
+    margin-left: 38px;
+    margin-right: 38px;
+    margin-top: 0;
+    margin-bottom: 0;
+    text-shadow: 1px 1px 1px white;
 }
 
 #content a {
-    color: #7652ba;
-}
-
-#commands {
-    padding-right: 38px;
-    padding-left: 38px;
-    height: 38px;
-    overflow: auto;
+    color: #9B4115;
 }
 
 hr {
     border-style: none;
-    background-color: lightgray;
-    height: 3px;
+    background-color: #9AA48C;
+    height: 2px;
 }
 
-#commands a {
+a.command {
+    font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
     font-variant: small-caps;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: bold;
     border-radius: 4px;
     text-transform: uppercase;
-    border: 1px solid gray;
     padding-left: 5px;
     padding-right: 5px;
     padding-top: 0;
     text-decoration: none;
-    color: gray;
+    text-shadow: 1px 1px 1px white;
+    border: 1px solid #9AA48C;
+    color: #9AA48C;
 }
 
-#commands a:hover, #save button:hover {
-    border: 1px solid black;
-    background-color: black;
+a.command:hover {
+    background-color: #9B4115;
+    border-color: #9B4115;
+    text-shadow: none;
     color: white;
 }
 
-#edit, #discard {
+#edit {
     position: absolute;
-    right: 45px;
-    top: 40px;
-}
-
-#edit a {
-    border-color: lightgray;
-    color: lightgray;
+    right: 76px;
+    top: 51px;
+    z-index: 1000;
 }
 
 #save {
@@ -204,12 +210,26 @@ hr {
     line-height: 1.5em;
 }
 
-#search {
-    width: 10%;
-    float: right;
+#container {
+    position: relative;
+    min-height: 100%;
 }
 
-#search input {
+html, body {
+    height: 100%;
+}
+
+#footer {
+    position: absolute;
     width: 100%;
-    margin-top: 8px;
+    height: 76px;
+    text-align: center;
+    padding-top: 26px;
+    background-image: url('/footer-bg.jpg');
+    background-repeat: repeat-x;
+    bottom: 0;
+}
+
+#footer input {
+    width: 45%;
 }

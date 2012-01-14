@@ -15,11 +15,14 @@ import org.apache.lucene.index.IndexWriter
 import org.apache.lucene.index.Term
 import org.apache.lucene.index.TermPositionVector
 import org.apache.lucene.queryParser.standard.QueryParserUtil
+import org.apache.lucene.search.highlight.Highlighter
+import org.apache.lucene.search.highlight.QueryScorer
+import org.apache.lucene.search.highlight.SimpleSpanFragmenter
+import org.apache.lucene.search.highlight.TokenSources
 import org.apache.lucene.store.Directory
 import org.apache.lucene.store.RAMDirectory
 import org.apache.lucene.util.Version
 import org.apache.lucene.search.*
-import org.apache.lucene.search.highlight.*
 
 class LucenePageSearchIndex implements PageSearchIndex {
     private final Directory searchIndexDirectory
@@ -107,14 +110,14 @@ class LucenePageSearchIndex implements PageSearchIndex {
     }
 
     private Field titleFieldFor(Page page) {
-        return new Field('title',
+        new Field('title',
                 page.title,
                 Store.YES,
                 Index.NOT_ANALYZED_NO_NORMS)
     }
 
     private Field contentsFieldFor(Page page) {
-        return new Field('contents',
+        new Field('contents',
                 page.source.toString(),
                 Store.YES,
                 Index.ANALYZED,

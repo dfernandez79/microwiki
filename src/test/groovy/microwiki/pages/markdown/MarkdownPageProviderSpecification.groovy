@@ -8,7 +8,6 @@ import microwiki.search.SearchResults
 class MarkdownPageProviderSpecification extends spock.lang.Specification {
     MarkdownPageProvider provider
     File tempDir
-    private static final MOCK_SEARCH_RESULTS = new SearchResults('', null, 0, Collections.<SearchResult> emptyList())
 
     def setup() {
         tempDir = TempDirectory.create()
@@ -30,13 +29,13 @@ class MarkdownPageProviderSpecification extends spock.lang.Specification {
 
     def "All the pages available can using the eachPage method"() {
         when:
-        def pageURIs = new HashSet<URI>();
+        def pageURIs = [] as HashSet
         4.times { n ->
             def uri = 'test$n.md'.toURI()
             provider.writePage(uri) { out -> out.write 'Test $n'}
             pageURIs << uri
         }
-        def pages = new HashSet<URI>()
+        def pages = [] as HashSet
         provider.eachPage { pages << it.uri }
 
         then:

@@ -6,12 +6,14 @@ class Templates {
     static final ViewTemplate DEFAULT_CREATE_TEMPLATE = DEFAULT_EDIT_TEMPLATE
     static final ViewTemplate DEFAULT_READ_TEMPLATE = template('display.html', [readonly: true])
     static final ViewTemplate DEFAULT_SEARCH_TEMPLATE = template('search.html')
+    static final ViewTemplate DEFAULT_DIRECTORY_LISTING_TEMPLATE = template('directory-listing.html')
 
     public final ViewTemplate display
     public final ViewTemplate edit
     public final ViewTemplate create
     public final ViewTemplate read
     public final ViewTemplate search
+    public final ViewTemplate directoryListing
 
     private static template(String resource, Map templateSpecificContext) {
         TemplateAdapter.using(this.getResource("/microwiki/templates/$resource"), templateSpecificContext)
@@ -31,6 +33,7 @@ class Templates {
         create = config.create ?: DEFAULT_CREATE_TEMPLATE
         read = config.read ?: DEFAULT_READ_TEMPLATE
         search = config.search ?: DEFAULT_SEARCH_TEMPLATE
+        directoryListing = config.directoryListing ?: DEFAULT_DIRECTORY_LISTING_TEMPLATE
     }
 
     boolean isAnyRedefined() {
