@@ -5,8 +5,6 @@ import java.util.regex.Pattern
 import microwiki.pages.Page
 import microwiki.pages.WritablePageProvider
 
-// TODO 11. Change fonts
-// TODO 12. Add hyphenation
 // TODO 13. Add jQuery animation for quickref
 // TODO 14. Welcome page
 // TODO 15. Document code and design (javadoc / wiki)

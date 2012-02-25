@@ -30,6 +30,7 @@ class Config {
         out.println "Port: ${server.port}"
         out.println "Encoding: ${server.encoding}"
         if (server.readOnly) { out.println 'Read Only Mode' }
+        if (server.aliases) { out.println 'File aliases (symlinks) are allowed' }
         if (search.disabled) { out.println 'Search is disabled' }
         if (templates.anyRedefined) { out.print templates }
         str.toString()

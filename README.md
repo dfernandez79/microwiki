@@ -22,7 +22,7 @@ Roadmap
 
 This is the prioritized backlog of things to do for the 1.0 release:
 
-1. Search functionality
+1. *DONE* Search functionality
 
 2. *DONE* Executable package
 

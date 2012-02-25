@@ -71,8 +71,9 @@ class Server {
             }
 
             def defaultServletHolder = new ServletHolder(new DefaultServlet())
-            // TODO temporal to make debugging easier, remove after that
-            defaultServletHolder.setInitParameter('aliases', 'true')
+            if (config.server.aliases) {
+                defaultServletHolder.setInitParameter('aliases', 'true')
+            }
 
             addServlet(defaultServletHolder, '/')
 

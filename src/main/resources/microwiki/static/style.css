@@ -8,6 +8,15 @@ html, body, div, ul, ol, li, dl, dt, dd, h1, h2, h3, h4, h5, h6, pre, form, p, b
     padding: 0;
 }
 
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: 'Droid Serif', Georgia, Times, serif;
+    color: #5C5C5B;
+}
+
 ul, ol {
     padding-left: 40px;
     margin-bottom: 1em;
@@ -40,15 +49,6 @@ p {
     margin-bottom: 1em;
 }
 
-body {
-    font-family: 'Droid Serif', Georgia, Times, serif;
-    color: #5C5C5B;
-}
-
-#content>h1:first-child {
-    margin-top: 0;
-}
-
 h1, h2 {
     font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
     margin-top: 2em;
@@ -64,6 +64,34 @@ h2 {
     margin-bottom: 0.3em;
 }
 
+hr {
+    border-style: none;
+    background-color: #9AA48C;
+    height: 2px;
+}
+
+
+/* Display mode styles ---------------------------------------------------------------------------------------------- */
+#container {
+    position: relative;
+    min-height: 100%;
+}
+
+#footer {
+    position: absolute;
+    width: 100%;
+    height: 76px;
+    text-align: center;
+    padding-top: 26px;
+    background-image: url('/footer-bg.jpg');
+    background-repeat: repeat-x;
+    bottom: 0;
+}
+
+#footer input {
+    width: 45%;
+}
+
 #content {
     position: relative;
     width: auto;
@@ -76,19 +104,31 @@ h2 {
     margin-top: 0;
     margin-bottom: 0;
     text-shadow: 1px 1px 1px white;
+    z-index: -1;
+}
+
+#content>h1:first-child {
+    margin-top: 0;
 }
 
 #content a {
     color: #9B4115;
 }
 
-hr {
-    border-style: none;
-    background-color: #9AA48C;
-    height: 2px;
+.command:hover {
+    background-color: #9B4115;
+    border-color: #9B4115;
+    text-shadow: none;
+    color: white;
 }
 
-a.command {
+#edit {
+    position: absolute;
+    right: 76px;
+    top: 51px;
+}
+
+.command, body.edit #commands button, body.edit #commands a {
     font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
     font-variant: small-caps;
     font-size: 11px;
@@ -102,22 +142,12 @@ a.command {
     text-shadow: 1px 1px 1px white;
     border: 1px solid #9AA48C;
     color: #9AA48C;
+    background-color: transparent;
+    cursor: pointer;
+    margin: 0;
 }
 
-a.command:hover {
-    background-color: #9B4115;
-    border-color: #9B4115;
-    text-shadow: none;
-    color: white;
-}
-
-#edit {
-    position: absolute;
-    right: 76px;
-    top: 51px;
-    z-index: 1000;
-}
-
+/* Edit mode styles ------------------------------------------------------------------------------------------------- */
 #save {
     position: absolute;
     left: 46px;
@@ -128,33 +158,28 @@ a.command:hover {
     font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
     font-size: 15px;
     padding: 0 20px;
-    font-variant: small-caps;
-    font-weight: bold;
-    border-radius: 4px;
-    text-transform: uppercase;
-    border: 1px solid gray;
     color: gray;
-    background-color: transparent;
-    cursor: pointer;
-    margin: 0;
 }
 
-#toggleQuickRef {
+#quickRefToogleLabel {
+    float: right;
+}
+
+#discard {
     position: absolute;
-    top: 40px;
-    left: 140px;
+    right: 76px;
+    top: 51px;
 }
-
 
 #discard a:hover {
     background-color: #801b1b;
     color: white;
 }
 
-.edit #content {
+/* .edit #content {
     padding-left: 8px !important;
     padding-right: 13px !important
-}
+} */
 
 .edit textarea {
     font-family: 'Droid Sans Mono', monospace, sans-serif;
@@ -176,6 +201,7 @@ a.command:hover {
     padding-top: 25px;
     padding-bottom: 50px;
     overflow: auto;
+    display: none;
 }
 
 #quickRef pre {
@@ -210,26 +236,3 @@ a.command:hover {
     line-height: 1.5em;
 }
 
-#container {
-    position: relative;
-    min-height: 100%;
-}
-
-html, body {
-    height: 100%;
-}
-
-#footer {
-    position: absolute;
-    width: 100%;
-    height: 76px;
-    text-align: center;
-    padding-top: 26px;
-    background-image: url('/footer-bg.jpg');
-    background-repeat: repeat-x;
-    bottom: 0;
-}
-
-#footer input {
-    width: 45%;
-}

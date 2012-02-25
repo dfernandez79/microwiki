@@ -93,7 +93,7 @@ Encoding: ${config.server.encoding}
 
         when:
         def config = configWith("""
-        server { port = 6767; readOnly = true; encoding = 'ISO-8859-1'}
+        server { port = 6767; readOnly = true; aliases = true; encoding = 'ISO-8859-1'}
         templates { edit = '${tempFile.absolutePath}'; read = '${tempFile.absolutePath}' }
         search { enabled = false }""")
 
@@ -101,6 +101,7 @@ Encoding: ${config.server.encoding}
         config.toString() == """Port: ${config.server.port}
 Encoding: ${config.server.encoding}
 Read Only Mode
+File aliases (symlinks) are allowed
 Search is disabled
 Templates:
     Edit: ${config.templates.edit}

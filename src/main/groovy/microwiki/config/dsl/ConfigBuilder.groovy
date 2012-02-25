@@ -16,6 +16,7 @@ server {
     port = 9999  // by default if ${Server.DEFAULT_PORT}
     readOnly = false // by default is false
     encoding = 'UTF-8' // by default is ${Server.DEFAULT_ENCODING}
+    aliases = false // by default is false
 }
 search {
     enabled = true // by default is true
@@ -26,6 +27,11 @@ templates {
     edit = new File('edit.html) // you can use files
     read = new StringReader('hello') // readers...
     create = new URL('http//mytemplate.com/template') // or urls
+
+    // You can use debug(source) to indicate that the template must be realoded each time:
+    // display = debug('dipl.html')
+    // Templates can also contain specific parameters that can be passed using template(source, context)
+    // display = template('displ.html', [myParam:'hello',other:true])
 }
 """
 
@@ -69,9 +75,10 @@ templates {
         int port = Server.DEFAULT_PORT
         String encoding = Server.DEFAULT_ENCODING
         boolean readOnly = false
+        boolean aliases = false
 
         ServerConfig build() {
-            new ServerConfig(port, encoding, readOnly)
+            new ServerConfig(port, encoding, readOnly, aliases)
         }
     }
 
