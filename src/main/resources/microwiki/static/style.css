@@ -1,8 +1,3 @@
-html {
-    background: whiteSmoke none repeat scroll 0 0;
-    background-image: url('/noise.png');
-}
-
 html, body, div, ul, ol, li, dl, dt, dd, h1, h2, h3, h4, h5, h6, pre, form, p, blockquote, fieldset, input {
     margin: 0;
     padding: 0;
@@ -12,8 +7,13 @@ html, body {
     height: 100%;
 }
 
+html {
+    background: whiteSmoke none repeat scroll 0 0;
+    background-image: url('/noise.png');
+}
+
 body {
-    font-family: 'Droid Serif', Georgia, Times, serif;
+    font-family: Times, serif;
     color: #5C5C5B;
 }
 
@@ -23,8 +23,8 @@ ul, ol {
 }
 
 pre, code {
-    font-family: 'Droid Sans Mono', monospace, sans-serif;
-    font-size: 95%;
+    font-family: Monaco, monospace, sans-serif;
+    font-size: 90%;
 }
 
 code {
@@ -33,11 +33,21 @@ code {
     text-shadow: none;
 }
 
-blockquote, pre {
-    background-color: #E1E3C2;
+pre {
+    background-color: rgba(225, 227, 194, 0.3);
     padding: 0.5em;
-    border-left: 6px solid #9AA48C;
     margin-bottom: 1em;
+    text-shadow: none;
+    border: 1px solid rgba(155, 65, 21,0.3);
+    border-radius: 3px;
+}
+
+blockquote {
+    border-left: 4px solid #9B4115;
+    padding: 0.5em 1em;    
+    margin-bottom: 1em;
+    margin-left: 3em;
+    margin-top: 1em;
     text-shadow: none;
 }
 
@@ -50,14 +60,14 @@ p {
 }
 
 h1, h2 {
-    font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
-    margin-top: 2em;
+    font-family: Helvetica, sans-serif;
     color: #9B4115;
     text-shadow: 1px 1px 1px white;
 }
 
 h1 {
-    margin-bottom: 1em;
+    margin-bottom: 0.5em;
+    font-size: 3em;
 }
 
 h2 {
@@ -66,7 +76,7 @@ h2 {
 
 hr {
     border-style: none;
-    background-color: #9AA48C;
+    background-color: #9B4115;
     height: 2px;
 }
 
@@ -94,17 +104,15 @@ hr {
 
 #content {
     position: relative;
-    width: auto;
-    padding-left: 38px;
-    padding-right: 38px;
+    width: 80%;
+    padding-left: 0;
+    padding-right: 0;
     padding-top: 76px;
     padding-bottom: 178px;
-    margin-left: 38px;
-    margin-right: 38px;
+    margin-left: auto;
+    margin-right: auto;
     margin-top: 0;
     margin-bottom: 0;
-    text-shadow: 1px 1px 1px white;
-    z-index: -1;
 }
 
 #content>h1:first-child {
@@ -115,21 +123,15 @@ hr {
     color: #9B4115;
 }
 
-.command:hover {
-    background-color: #9B4115;
-    border-color: #9B4115;
-    text-shadow: none;
-    color: white;
-}
-
 #edit {
     position: absolute;
-    right: 76px;
-    top: 51px;
+    right: 0px;
+    top: 55px;
+    z-index: 100;
 }
 
-.command, body.edit #commands button, body.edit #commands a {
-    font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
+.command {
+    font-family:  Helvetica, sans-serif;
     font-variant: small-caps;
     font-size: 11px;
     font-weight: bold;
@@ -141,24 +143,31 @@ hr {
     text-decoration: none;
     text-shadow: 1px 1px 1px white;
     border: 1px solid #9AA48C;
-    color: #9AA48C;
+    color: #9AA48C !important;
     background-color: transparent;
     cursor: pointer;
     margin: 0;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+
+.command:hover {
+    background-color: #9B4115;
+    border-color: #9B4115;
+    text-shadow: none !important;
+    color: white !important;
+    font-weight: normal;
 }
 
 /* Edit mode styles ------------------------------------------------------------------------------------------------- */
 #save {
     position: absolute;
-    left: 46px;
+    left: 0;
     top: 45px;
 }
 
 #save button {
-    font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
-    font-size: 15px;
     padding: 0 20px;
-    color: gray;
 }
 
 #quickRefToogleLabel {
@@ -167,19 +176,9 @@ hr {
 
 #discard {
     position: absolute;
-    right: 76px;
-    top: 51px;
+    right: 0;
+    top: 45px;
 }
-
-#discard a:hover {
-    background-color: #801b1b;
-    color: white;
-}
-
-/* .edit #content {
-    padding-left: 8px !important;
-    padding-right: 13px !important
-} */
 
 .edit textarea {
     font-family: 'Droid Sans Mono', monospace, sans-serif;
@@ -235,4 +234,3 @@ hr {
     width: 40em;
     line-height: 1.5em;
 }
-

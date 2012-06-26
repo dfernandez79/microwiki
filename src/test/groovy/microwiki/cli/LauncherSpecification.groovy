@@ -6,6 +6,7 @@ import microwiki.config.Config
 
 import microwiki.config.dsl.ConfigScriptException
 import microwiki.config.dsl.ConfigBuilder
+import microwiki.config.ServerConfig
 
 class LauncherSpecification extends spock.lang.Specification {
     def "Display command line args help if the --help parameter is given"() {
@@ -89,7 +90,7 @@ options:
         Server server = new Launcher({ displayed = it }, tempDir.absolutePath).startServer()
 
         expect:
-        displayed == "http://localhost:${Server.DEFAULT_PORT}/README.md".toURI()
+        displayed == "http://localhost:${ServerConfig.DEFAULT_PORT}/README.md".toURI()
 
         cleanup:
         server?.stop()
@@ -128,7 +129,7 @@ options:
         Server server = new Launcher({ displayed = it }, tempDir.absolutePath).startServer()
 
         expect:
-        displayed == "http://localhost:${Server.DEFAULT_PORT}/index.md".toURI()
+        displayed == "http://localhost:${ServerConfig.DEFAULT_PORT}/index.md".toURI()
 
         cleanup:
         server?.stop()

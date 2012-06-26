@@ -61,8 +61,8 @@ class ConfigSpecification extends spock.lang.Specification {
         def config = new Config()
 
         then:
-        config.server.port == Server.DEFAULT_PORT
-        config.server.encoding == Server.DEFAULT_ENCODING
+        config.server.port == ServerConfig.DEFAULT_PORT
+        config.server.encoding == ServerConfig.DEFAULT_ENCODING
         !config.server.readOnly
         config.templates.display == Templates.DEFAULT_DISPLAY_TEMPLATE
         config.templates.create == Templates.DEFAULT_CREATE_TEMPLATE

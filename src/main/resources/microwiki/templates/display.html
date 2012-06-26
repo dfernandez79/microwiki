@@ -2,19 +2,18 @@
 <html>
 <head>
     <title>${page.uri.path}</title>
-    <link href="/fonts.css" rel="stylesheet" type="text/css"/>
-    <link href="/style.css" rel="stylesheet" type="text/css"/>
+    <link href="/style.css" rel="stylesheet" type="text/css">
 </head>
 <body><div id="container">
-<% if (!readonly) { %>
-<div id="edit"><a class="command" href="?edit">Edit</a></div>
-<% } %>
 
-<div id="content">${page.html}</div>
+<div id="content">
+    <% if (!readonly) { %><div id="edit"><a class="command" href="?edit">Edit</a></div><% } %>
+    ${page.html}
+</div>
 
 <% if (searchEnabled) { %>
 <div id="footer">
-    <form action="/search"><input placeholder="Search" name="q" type="search"/></form>
+    <form action="/search"><input placeholder="Search" name="q" type="search" x-webkit-speech></form>
 </div>
 <% } %>
 </div></body>

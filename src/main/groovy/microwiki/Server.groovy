@@ -20,10 +20,16 @@ import org.eclipse.jetty.util.resource.Resource
 import org.eclipse.jetty.util.resource.ResourceCollection
 import org.eclipse.jetty.servlet.*
 
+/**
+ * The microwiki web server. Once that it´s instantiated with the proper {@link Config configuration}, it
+ * can be controlled by using the {@link Server#start} and {@link Server#stop} methods.
+ * <p>
+ * When the user starts the application from the command line, the starting point is the class
+ * {@link microwiki.cli.Launcher}, which creates and starts an instance of this class.</p>
+ *
+ * @author dfernandez79
+ */
 class Server {
-    static final int DEFAULT_PORT = 9999
-    static final String DEFAULT_ENCODING = 'UTF-8'
-
     final File docRoot
     final Config config
     final PageProvider provider
@@ -36,7 +42,6 @@ class Server {
         this.docRoot = docRoot
         this.config = config
 
-        server = new JettyServer(config.server.port)
         provider = createPageProvider()
 
         if (config.search.enabled) {
@@ -46,8 +51,11 @@ class Server {
             searchIndex = null
             fileChangeMonitor = null
         }
+
+        server = new JettyServer(config.server.port)
         initializeServerHandlers()
     }
+
 
     private HttpServlet createPageServlet() {
         if (config.server.readOnly || !(provider instanceof WritablePageProvider)) {

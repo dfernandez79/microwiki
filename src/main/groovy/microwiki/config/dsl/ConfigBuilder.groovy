@@ -1,6 +1,5 @@
 package microwiki.config.dsl
 
-import microwiki.Server
 import microwiki.config.Config
 import microwiki.config.SearchConfig
 import microwiki.config.ServerConfig
@@ -13,9 +12,9 @@ class ConfigBuilder {
     static final String CONFIG_SCRIPT_EXAMPLE = """// This is a comment
 // config files are Groovy code, you can use any Java/Groovy class available
 server {
-    port = 9999  // by default if ${Server.DEFAULT_PORT}
+    port = 9999  // by default if ${ServerConfig.DEFAULT_PORT}
     readOnly = false // by default is false
-    encoding = 'UTF-8' // by default is ${Server.DEFAULT_ENCODING}
+    encoding = 'UTF-8' // by default is ${ServerConfig.DEFAULT_ENCODING}
     aliases = false // by default is false
 }
 search {
@@ -72,8 +71,8 @@ templates {
     }
 
     static class ServerConfigBuilder {
-        int port = Server.DEFAULT_PORT
-        String encoding = Server.DEFAULT_ENCODING
+        int port = ServerConfig.DEFAULT_PORT
+        String encoding = ServerConfig.DEFAULT_ENCODING
         boolean readOnly = false
         boolean aliases = false
 
